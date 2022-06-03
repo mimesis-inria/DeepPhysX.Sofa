@@ -8,8 +8,8 @@ DummyOptimizer: nothing to optimize in our DummyNetwork.
 from numpy import save, array
 
 # DeepPhysX related imports
-from DeepPhysX_Core.Network.BaseNetwork import BaseNetwork
-from DeepPhysX_Core.Network.BaseOptimization import BaseOptimization
+from DeepPhysX.Core.Network.BaseNetwork import BaseNetwork
+from DeepPhysX.Core.Network.BaseOptimization import BaseOptimization
 
 
 # Create a Network as a BaseNetwork child class

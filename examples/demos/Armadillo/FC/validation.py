@@ -13,10 +13,10 @@ import sys
 import Sofa.Gui
 
 # DeepPhysX related imports
-from DeepPhysX_Core.Dataset.BaseDatasetConfig import BaseDatasetConfig
-from DeepPhysX_Sofa.Pipeline.SofaRunner import SofaRunner
-from DeepPhysX_Torch.FC.FCConfig import FCConfig
-from DeepPhysX_Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
+from DeepPhysX.Core.Dataset.BaseDatasetConfig import BaseDatasetConfig
+from DeepPhysX.Sofa.Pipeline.SofaRunner import SofaRunner
+from DeepPhysX.Torch.FC.FCConfig import FCConfig
+from DeepPhysX.Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
 
 # Session related imports
 from download import ArmadilloDownloader

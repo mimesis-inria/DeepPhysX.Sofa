@@ -3,7 +3,7 @@ from asyncio import run
 import numpy as np
 import Sofa
 
-from DeepPhysX_Sofa.Environment.SofaEnvironment import SofaEnvironment
+from DeepPhysX.Sofa.Environment.SofaEnvironment import SofaEnvironment
 from TestEnvironment import TestEnvironment
 
 

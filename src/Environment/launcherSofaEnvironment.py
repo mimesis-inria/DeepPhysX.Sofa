@@ -2,7 +2,7 @@ from os import sep
 from os.path import dirname
 from sys import argv, path
 
-from DeepPhysX_Sofa.Environment.SofaEnvironment import SofaEnvironment as Environment
+from DeepPhysX.Sofa.Environment.SofaEnvironment import SofaEnvironment as Environment
 
 import Sofa
 

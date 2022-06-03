@@ -4,9 +4,9 @@ Define configurations for SofaEnvironment, Network and Dataset
 """
 
 # DeepPhysX related imports
-from DeepPhysX_Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
-from DeepPhysX_Core.Network.BaseNetworkConfig import BaseNetworkConfig
-from DeepPhysX_Core.Dataset.BaseDatasetConfig import BaseDatasetConfig
+from DeepPhysX.Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
+from DeepPhysX.Core.Network.BaseNetworkConfig import BaseNetworkConfig
+from DeepPhysX.Core.Dataset.BaseDatasetConfig import BaseDatasetConfig
 
 # Tutorial related imports
 from T1_environment import DummyEnvironment

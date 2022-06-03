@@ -1,10 +1,10 @@
 from typing import Optional
 import Sofa
 
-from DeepPhysX_Core.Pipelines.BaseRunner import BaseRunner
-from DeepPhysX_Core.Network.BaseNetworkConfig import BaseNetworkConfig
-from DeepPhysX_Core.Dataset.BaseDatasetConfig import BaseDatasetConfig
-from DeepPhysX_Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
+from DeepPhysX.Core.Pipelines.BaseRunner import BaseRunner
+from DeepPhysX.Core.Network.BaseNetworkConfig import BaseNetworkConfig
+from DeepPhysX.Core.Dataset.BaseDatasetConfig import BaseDatasetConfig
+from DeepPhysX.Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
 
 
 class SofaRunner(Sofa.Core.Controller, BaseRunner):

@@ -1,7 +1,7 @@
 from typing import Optional, Any
 from numpy import ndarray
 
-from DeepPhysX_Core.Environment.BaseEnvironment import BaseEnvironment
+from DeepPhysX.Core.Environment.BaseEnvironment import BaseEnvironment
 
 import Sofa
 import Sofa.Simulation

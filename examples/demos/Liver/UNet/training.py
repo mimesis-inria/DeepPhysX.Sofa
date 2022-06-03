@@ -11,11 +11,11 @@ import sys
 import torch
 
 # DeepPhysX related imports
-from DeepPhysX_Core.Dataset.BaseDatasetConfig import BaseDatasetConfig
-from DeepPhysX_Core.Visualizer.VedoVisualizer import VedoVisualizer
-from DeepPhysX_Core.Pipelines.BaseTrainer import BaseTrainer
-from DeepPhysX_Torch.UNet.UNetConfig import UNetConfig
-from DeepPhysX_Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
+from DeepPhysX.Core.Dataset.BaseDatasetConfig import BaseDatasetConfig
+from DeepPhysX.Core.Visualizer.VedoVisualizer import VedoVisualizer
+from DeepPhysX.Core.Pipelines.BaseTrainer import BaseTrainer
+from DeepPhysX.Torch.UNet.UNetConfig import UNetConfig
+from DeepPhysX.Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
 
 # Working session imports
 from download import LiverDownloader

@@ -7,7 +7,7 @@ DummyEnvironment: SOFA compatible version
 from numpy import array
 
 # DeepPhysX related imports
-from DeepPhysX_Sofa.Environment.SofaEnvironment import SofaEnvironment
+from DeepPhysX.Sofa.Environment.SofaEnvironment import SofaEnvironment
 
 
 # Create an Environment as a SofaEnvironment child class

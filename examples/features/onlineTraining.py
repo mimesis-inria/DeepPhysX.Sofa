@@ -8,11 +8,11 @@ from torch.nn import MSELoss
 from torch.optim import Adam
 
 # DeepPhysX related imports
-from DeepPhysX_Core.Pipelines.BaseTrainer import BaseTrainer
-from DeepPhysX_Core.Dataset.BaseDatasetConfig import BaseDatasetConfig
-from DeepPhysX_Core.Visualizer.VedoVisualizer import VedoVisualizer
-from DeepPhysX_Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
-from DeepPhysX_Torch.FC.FCConfig import FCConfig
+from DeepPhysX.Core.Pipelines.BaseTrainer import BaseTrainer
+from DeepPhysX.Core.Dataset.BaseDatasetConfig import BaseDatasetConfig
+from DeepPhysX.Core.Visualizer.VedoVisualizer import VedoVisualizer
+from DeepPhysX.Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
+from DeepPhysX.Torch.FC.FCConfig import FCConfig
 
 # Session imports
 from Environment.EnvironmentTraining import MeanEnvironmentTraining

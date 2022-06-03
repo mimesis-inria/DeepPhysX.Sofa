@@ -9,9 +9,9 @@ from torch.nn import MSELoss
 from torch.optim import Adam
 
 # DeepPhysX related imports
-from DeepPhysX_Core.Pipelines.BaseTrainer import BaseTrainer
-from DeepPhysX_Core.Dataset.BaseDatasetConfig import BaseDatasetConfig
-from DeepPhysX_Torch.FC.FCConfig import FCConfig
+from DeepPhysX.Core.Pipelines.BaseTrainer import BaseTrainer
+from DeepPhysX.Core.Dataset.BaseDatasetConfig import BaseDatasetConfig
+from DeepPhysX.Torch.FC.FCConfig import FCConfig
 
 
 def launch_training():

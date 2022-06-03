@@ -20,7 +20,7 @@ import SofaRuntime
 from Caribou.Topology import Grid3D
 
 # DeepPhysX related imports
-from DeepPhysX_Sofa.Environment.SofaEnvironment import SofaEnvironment
+from DeepPhysX.Sofa.Environment.SofaEnvironment import SofaEnvironment
 
 # Working session related imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))

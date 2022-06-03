@@ -1,7 +1,7 @@
 from unittest import TestCase
 import Sofa
 
-from DeepPhysX_Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
+from DeepPhysX.Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
 import TestEnvironment as Env
 
 

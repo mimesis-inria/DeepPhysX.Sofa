@@ -5,9 +5,9 @@ from subprocess import call as subprocesscall
 
 import Sofa
 
-from DeepPhysX_Core.Environment.BaseEnvironmentConfig import BaseEnvironmentConfig
-from DeepPhysX_Core.Visualizer.VedoVisualizer import VedoVisualizer
-from DeepPhysX_Sofa.Environment.SofaEnvironment import SofaEnvironment
+from DeepPhysX.Core.Environment.BaseEnvironmentConfig import BaseEnvironmentConfig
+from DeepPhysX.Core.Visualizer.VedoVisualizer import VedoVisualizer
+from DeepPhysX.Sofa.Environment.SofaEnvironment import SofaEnvironment
 
 
 class SofaEnvironmentConfig(BaseEnvironmentConfig):

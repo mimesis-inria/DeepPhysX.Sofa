@@ -4,10 +4,10 @@ Run the pipeline DataGenerator to produce a Dataset only.
 """
 
 # DeepPhysX related imports
-from DeepPhysX_Core.Pipelines.BaseDataGenerator import BaseDataGenerator
-from DeepPhysX_Core.Dataset.BaseDatasetConfig import BaseDatasetConfig
-from DeepPhysX_Core.Visualizer.VedoVisualizer import VedoVisualizer
-from DeepPhysX_Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
+from DeepPhysX.Core.Pipelines.BaseDataGenerator import BaseDataGenerator
+from DeepPhysX.Core.Dataset.BaseDatasetConfig import BaseDatasetConfig
+from DeepPhysX.Core.Visualizer.VedoVisualizer import VedoVisualizer
+from DeepPhysX.Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
 
 # Session related imports
 from Environment.EnvironmentDataset import MeanEnvironmentDataset

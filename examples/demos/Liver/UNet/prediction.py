@@ -13,12 +13,12 @@ import sys
 import Sofa.Gui
 
 # DeepPhysX related imports
-from DeepPhysX_Core.Dataset.BaseDatasetConfig import BaseDatasetConfig
-from DeepPhysX_Core.Visualizer.VedoVisualizer import VedoVisualizer
-from DeepPhysX_Core.Pipelines.BaseRunner import BaseRunner
-from DeepPhysX_Sofa.Pipeline.SofaRunner import SofaRunner
-from DeepPhysX_Torch.UNet.UNetConfig import UNetConfig
-from DeepPhysX_Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
+from DeepPhysX.Core.Dataset.BaseDatasetConfig import BaseDatasetConfig
+from DeepPhysX.Core.Visualizer.VedoVisualizer import VedoVisualizer
+from DeepPhysX.Core.Pipelines.BaseRunner import BaseRunner
+from DeepPhysX.Sofa.Pipeline.SofaRunner import SofaRunner
+from DeepPhysX.Torch.UNet.UNetConfig import UNetConfig
+from DeepPhysX.Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
 
 # Session related imports
 from download import LiverDownloader

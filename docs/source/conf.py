@@ -10,18 +10,17 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
-import os
+from os.path import abspath, join, pardir
 import sys
 
 # DeepPhysX root
-root = os.path.abspath(os.path.join(os.path.abspath(__file__), '..', '..', '..'))
-all_modules = {'DeepPhysX_Sofa': ['Environment', 'Pipeline']}
+root = abspath(join(abspath(__file__), pardir, pardir, pardir, 'src'))
+all_modules = ['Environment', 'Pipeline']
 
 # Import all modules
-for package, modules in all_modules.items():
-    sys.path.append(os.path.join(root, package))
-    for module in modules:
-        sys.path.append(os.path.join(root, package, module))
+sys.path.append(root)
+for module in all_modules:
+    sys.path.append(join(root, module))
 
 # -- Project information -----------------------------------------------------
 

@@ -1,4 +1,4 @@
-from DeepPhysX_Sofa.Environment.SofaEnvironment import SofaEnvironment
+from DeepPhysX.Sofa.Environment.SofaEnvironment import SofaEnvironment
 
 
 class TestEnvironment(SofaEnvironment):

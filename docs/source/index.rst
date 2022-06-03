@@ -20,3 +20,6 @@ SOFA
 
     Environment  <sofa/environment.rst>
     Pipeline     <sofa/pipeline.rst>
+
+
+Return to `DeepPhysX main page <https://deepphysx.readthedocs.io/en/latest/>`_.

@@ -10,10 +10,10 @@ import os
 import Sofa.Gui
 
 # DeepPhysX related imports
-from DeepPhysX_Sofa.Pipeline.SofaRunner import SofaRunner
-from DeepPhysX_Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
-from DeepPhysX_Torch.FC.FCConfig import FCConfig
-from DeepPhysX_Core.Dataset.BaseDatasetConfig import BaseDatasetConfig
+from DeepPhysX.Sofa.Pipeline.SofaRunner import SofaRunner
+from DeepPhysX.Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
+from DeepPhysX.Torch.FC.FCConfig import FCConfig
+from DeepPhysX.Core.Dataset.BaseDatasetConfig import BaseDatasetConfig
 
 # Session imports
 from Environment.EnvironmentPrediction import MeanEnvironmentPrediction

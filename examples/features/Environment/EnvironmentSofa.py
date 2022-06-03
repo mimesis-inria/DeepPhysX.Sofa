@@ -12,7 +12,7 @@ from numpy.random import random, randint
 from time import sleep
 
 # DeepPhysX related imports
-from DeepPhysX_Sofa.Environment.SofaEnvironment import SofaEnvironment
+from DeepPhysX.Sofa.Environment.SofaEnvironment import SofaEnvironment
 
 
 # Create an Environment as a BaseEnvironment child class

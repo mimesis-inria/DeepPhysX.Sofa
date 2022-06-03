@@ -10,7 +10,7 @@ import os
 import Sofa.Gui
 
 # DeepPhysX related imports
-from DeepPhysX_Sofa.Pipeline.SofaRunner import SofaRunner
+from DeepPhysX.Sofa.Pipeline.SofaRunner import SofaRunner
 
 # Session related imports
 from T3_configuration import env_config, net_config

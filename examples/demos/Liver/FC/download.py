@@ -5,7 +5,7 @@ Methods will be called within training and predictions scripts if repositories a
 Running this script directly will download the full set of data.
 """
 
-from DeepPhysX_Core.Utils.data_downloader import DataDownloader
+from DeepPhysX.Core.Utils.data_downloader import DataDownloader
 
 DOI = 'doi:10.5072/FK2/ZPFUBK'
 session_name = 'liver_dpx'

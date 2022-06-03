@@ -6,5 +6,5 @@ exceptions = ['__init__.py', '__pycache__', 'launcherSofaEnvironment.py']
 modules = [module for module in listdir(package) if module.endswith('.py') and module not in exceptions]
 __all__ = []
 for module in sorted(modules):
-    exec(f"from DeepPhysX_Sofa.Environment.{module[:-3]} import {module[:-3]}")
+    exec(f"from DeepPhysX.Sofa.Environment.{module[:-3]} import {module[:-3]}")
     __all__.append(module[:-3])
