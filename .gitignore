@@ -8,7 +8,7 @@ build/
 .idea/
 cmake-build-release/
 cmake-build-debug/
-DeepPhysX_Sofa.egg-info/
+DeepPhysX.Sofa.egg-info/
 dist/
 venv/
 sessions/
