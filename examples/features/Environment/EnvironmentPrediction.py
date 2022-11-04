@@ -13,36 +13,40 @@ from numpy import array
 
 # Session related imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from EnvironmentSofa import MeanEnvironmentSofa
+from EnvironmentDataset import EnvironmentDataset
 
 
 # Create an Environment as a BaseEnvironment child class
-class MeanEnvironmentPrediction(MeanEnvironmentSofa):
+class MeanEnvironmentPrediction(EnvironmentDataset):
 
     def __init__(self,
-                 root_node,
-                 ip_address='localhost',
-                 port=10000,
-                 instance_id=0,
-                 number_of_instances=1,
                  as_tcp_ip_client=True,
-                 environment_manager=None):
+                 instance_id=1,
+                 instance_nb=1,
+                 visualization_db=None,
+                 constant=False,
+                 data_size=(30, 3),
+                 delay=False):
 
-        MeanEnvironmentSofa.__init__(self,
-                                     root_node=root_node,
-                                     ip_address=ip_address,
-                                     port=port,
-                                     instance_id=instance_id,
-                                     number_of_instances=number_of_instances,
-                                     as_tcp_ip_client=as_tcp_ip_client,
-                                     environment_manager=environment_manager)
+        EnvironmentDataset.__init__(self,
+                                    as_tcp_ip_client=as_tcp_ip_client,
+                                    instance_id=instance_id,
+                                    instance_nb=instance_nb,
+                                    visualization_db=visualization_db,
+                                    constant=constant,
+                                    data_size=data_size,
+                                    delay=delay)
 
     """
     ENVIRONMENT INITIALIZATION
     Methods will be automatically called in this order to create and initialize Environment.
-        - recv_parameters
         - create
+        - init_database
+        - init_visualization
     """
+
+    def init_visualization(self):
+        pass
 
     """
     ENVIRONMENT BEHAVIOR
@@ -50,9 +54,14 @@ class MeanEnvironmentPrediction(MeanEnvironmentSofa):
     'as_tcp_ip_client' configuration value.
         - onAnimateBeginEvent
         - onAnimateEndEvent
-        - apply_prediction
+        - on_step
     """
 
+    def onAnimateEndEvent(self, _):
+        pass
+
     def apply_prediction(self, prediction):
+
         # Update MechanicalObject
-        self.MO['predict'].position.value = array([prediction])
+        center = prediction['prediction']
+        self.MO['prediction'].position.value = center

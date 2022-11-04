@@ -20,14 +20,14 @@ from T1_environment import DummyEnvironment
 def create_environment():
 
     # Create the Environment config
-    env_config = SofaEnvironmentConfig(environment_class=DummyEnvironment,
-                                       as_tcp_ip_client=False)
+    env_config = SofaEnvironmentConfig(environment_class=DummyEnvironment)
 
     # Create DummyEnvironment
     env = env_config.create_environment()
     env.create()
     env.init()
     return env
+
 
 if __name__ == '__main__':
 
