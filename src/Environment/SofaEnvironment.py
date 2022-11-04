@@ -1,78 +1,163 @@
-from typing import Optional, Any
+from typing import Optional, Union, Tuple, Dict, Any
 from numpy import ndarray
 
-from DeepPhysX.Core.Environment.BaseEnvironment import BaseEnvironment
+from DeepPhysX.Core.Environment.BaseEnvironment import BaseEnvironment, Database
 
 import Sofa
 import Sofa.Simulation
 
 
 class SofaEnvironment(Sofa.Core.Controller, BaseEnvironment):
-    """
-    | SofaEnvironment is an environment class base on SOFA to compute simulated data for the network and its
-      optimization process.
-
-    :param Sofa.Core.Node root_node: Node used to create the scene graph
-    :param str ip_address: IP address of the TcpIpObject
-    :param int port: Port number of the TcpIpObject
-    :param int instance_id: ID of the instance
-    :param int number_of_instances: Number of simultaneously launched instances
-    :param bool as_tcp_ip_client: Environment is owned by a TcpIpClient if True, by an EnvironmentManager if False
-    :param Optional[Any] environment_manager: EnvironmentManager that handles the Environment if 'as_tcpip_client' is
-                                              False
-    """
 
     def __init__(self,
-                 root_node: Sofa.Core.Node,
-                 ip_address: str = 'localhost',
-                 port: int = 10000,
-                 instance_id: int = 0,
-                 number_of_instances: int = 1,
                  as_tcp_ip_client: bool = True,
-                 environment_manager: Optional[Any] = None,
+                 instance_id: int = 1,
+                 instance_nb: int = 1,
+                 visualization_db: Optional[Union[Database, Tuple[str, str]]] = None,
                  *args, **kwargs):
+        """
+        SofaEnvironment computes simulated data with SOFA for the Network and its training process.
+
+        :param as_tcp_ip_client: Environment is a TcpIpObject if True, is owned by an EnvironmentManager if False.
+        :param instance_id: ID of the instance.
+        :param instance_nb: Number of simultaneously launched instances.
+        :param visualization_db: The path to the visualization Database or the visualization Database object to connect.
+        """
 
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
         # Warning: Define root node before init Environment
-        self.root = root_node
+        self.root = Sofa.Core.Node('root')
         BaseEnvironment.__init__(self,
-                                 ip_address=ip_address,
-                                 port=port,
-                                 instance_id=instance_id,
-                                 number_of_instances=number_of_instances,
                                  as_tcp_ip_client=as_tcp_ip_client,
-                                 environment_manager=environment_manager)
+                                 instance_id=instance_id,
+                                 instance_nb=instance_nb,
+                                 visualization_db=visualization_db)
+        self.root.addObject(self)
 
-    def init(self):
+    ##########################################################################################
+    ##########################################################################################
+    #                                 Environment initialization                             #
+    ##########################################################################################
+    ##########################################################################################
+
+    def create(self) -> None:
         """
-        | Initialize the Environment.
-        | Not mandatory.
+        Create the Environment. Automatically called when Environment is launched.
+        Must be implemented by user.
         """
 
+        raise NotImplementedError
+
+    def init(self) -> None:
+        """
+        Initialize the Environment. Automatically called when Environment is launched.
+        """
+
+        # Init the root node
         Sofa.Simulation.init(self.root)
 
-    async def step(self):
+    def init_database(self) -> None:
         """
-        | Compute the number of steps in the Environment specified by simulations_per_step in EnvironmentConfig.
-        """
-
-        await self.animate()
-        await self.on_step()
-
-    async def animate(self):
-        """
-        | Trigger an Animation step.
+        Define the fields of the training dataset. Automatically called when Environment is launched.
+        Must be implemented by user.
         """
 
-        Sofa.Simulation.animate(self.root, self.root.dt.value)
+        raise NotImplementedError
 
-    async def on_step(self):
+    def init_visualization(self) -> None:
         """
-        | Executed after an animation step.
-        | No mandatory.
+        Define the visualization objects to send to the Visualizer. Automatically called when Environment is launched.
+        Not mandatory.
         """
 
         pass
+
+    def save_parameters(self, **kwargs) -> None:
+        """
+        Save a set of parameters in the Database.
+        """
+
+        BaseEnvironment.save_parameters(self, **kwargs)
+
+    def load_parameters(self) -> Dict[str, Any]:
+        """
+        Load a set of parameters from the Database.
+        """
+
+        return BaseEnvironment.load_parameters(self)
+
+    ##########################################################################################
+    ##########################################################################################
+    #                                 Environment behavior                                   #
+    ##########################################################################################
+    ##########################################################################################
+
+    async def step(self):
+        """
+        Compute the number of steps in the Environment specified by simulations_per_step in EnvironmentConfig.
+        """
+
+        Sofa.Simulation.animate(self.root, self.root.dt.value)
+        await self.on_step()
+
+    async def on_step(self):
+        """
+        Executed after an animation step.
+        No mandatory.
+        """
+
+        pass
+
+    def check_sample(self) -> bool:
+        """
+        Check if the current produced sample is usable for training.
+        Not mandatory.
+
+        :return: Current data can be used or not
+        """
+
+        return True
+
+    def apply_prediction(self,
+                         prediction: Dict[str, ndarray]) -> None:
+        """
+        Apply network prediction in environment.
+        Not mandatory.
+
+        :param prediction: Prediction data.
+        """
+
+        pass
+
+    def close(self) -> None:
+        """
+        Close the Environment. Automatically called when Environment is shut down.
+        Not mandatory.
+        """
+
+        pass
+
+    ##########################################################################################
+    ##########################################################################################
+    #                                   Available requests                                   #
+    ##########################################################################################
+    ##########################################################################################
+
+    def get_prediction(self, **kwargs) -> Dict[str, ndarray]:
+        """
+        Request a prediction from Network.
+
+        :return: Network prediction.
+        """
+
+        return BaseEnvironment.get_prediction(self, **kwargs)
+
+    def update_visualisation(self) -> None:
+        """
+        Triggers the Visualizer update.
+        """
+
+        BaseEnvironment.update_visualisation(self)
 
     def __str__(self):
         """
