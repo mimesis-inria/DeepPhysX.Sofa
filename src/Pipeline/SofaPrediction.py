@@ -44,6 +44,13 @@ class SofaPrediction(Sofa.Core.Controller, BasePrediction):
         self.prediction_begin()
         self.root = self.data_manager.environment_manager.environment.root
         self.root.addObject(self)
+        self.load_samples = environment_config.load_samples
+
+    def onAnimateBeginEvent(self, _):
+
+        if self.load_samples:
+            sample_id = self.data_manager.load_sample()
+            self.data_manager.environment_manager.environment._get_training_data(sample_id)
 
     def onAnimateEndEvent(self, _):
         """
@@ -61,7 +68,8 @@ class SofaPrediction(Sofa.Core.Controller, BasePrediction):
         """
 
         self.data_manager.get_data(epoch=0,
-                                   animate=False)
+                                   animate=False,
+                                   load_samples=not self.load_samples)
 
     def close(self) -> None:
         """
