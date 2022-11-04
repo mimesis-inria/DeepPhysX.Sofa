@@ -17,13 +17,15 @@ class DummyEnvironment(SofaEnvironment):
                  as_tcp_ip_client=True,
                  instance_id=1,
                  instance_nb=1,
-                 visualization_db=None):
+                 visualization_db=None,
+                 **kwargs):
 
         SofaEnvironment.__init__(self,
                                  as_tcp_ip_client=as_tcp_ip_client,
                                  instance_id=instance_id,
                                  instance_nb=instance_nb,
-                                 visualization_db=visualization_db)
+                                 visualization_db=visualization_db,
+                                 **kwargs)
 
         self.step_nb = 0
 

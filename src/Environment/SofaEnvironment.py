@@ -31,7 +31,8 @@ class SofaEnvironment(Sofa.Core.Controller, BaseEnvironment):
                                  as_tcp_ip_client=as_tcp_ip_client,
                                  instance_id=instance_id,
                                  instance_nb=instance_nb,
-                                 visualization_db=visualization_db)
+                                 visualization_db=visualization_db,
+                                 **kwargs)
         self.root.addObject(self)
 
     ##########################################################################################
