@@ -9,7 +9,6 @@ Apply predictions.
 # Python related imports
 import os
 import sys
-from numpy import array
 
 # Session related imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -23,7 +22,6 @@ class MeanEnvironmentPrediction(EnvironmentDataset):
                  as_tcp_ip_client=True,
                  instance_id=1,
                  instance_nb=1,
-                 visualization_db=None,
                  constant=False,
                  data_size=(30, 3),
                  delay=False):
@@ -32,7 +30,6 @@ class MeanEnvironmentPrediction(EnvironmentDataset):
                                     as_tcp_ip_client=as_tcp_ip_client,
                                     instance_id=instance_id,
                                     instance_nb=instance_nb,
-                                    visualization_db=visualization_db,
                                     constant=constant,
                                     data_size=data_size,
                                     delay=delay)

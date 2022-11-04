@@ -1,4 +1,4 @@
-from typing import Optional, Union, Tuple, Dict, Any
+from typing import Dict, Any
 from numpy import ndarray
 
 from DeepPhysX.Core.Environment.BaseEnvironment import BaseEnvironment, Database
@@ -13,7 +13,6 @@ class SofaEnvironment(Sofa.Core.Controller, BaseEnvironment):
                  as_tcp_ip_client: bool = True,
                  instance_id: int = 1,
                  instance_nb: int = 1,
-                 visualization_db: Optional[Union[Database, Tuple[str, str]]] = None,
                  *args, **kwargs):
         """
         SofaEnvironment computes simulated data with SOFA for the Network and its training process.
@@ -31,7 +30,6 @@ class SofaEnvironment(Sofa.Core.Controller, BaseEnvironment):
                                  as_tcp_ip_client=as_tcp_ip_client,
                                  instance_id=instance_id,
                                  instance_nb=instance_nb,
-                                 visualization_db=visualization_db,
                                  **kwargs)
         self.root.addObject(self)
 

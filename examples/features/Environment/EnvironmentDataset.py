@@ -23,7 +23,6 @@ class EnvironmentDataset(EnvironmentSofa):
                  as_tcp_ip_client=True,
                  instance_id=1,
                  instance_nb=1,
-                 visualization_db=None,
                  constant=False,
                  data_size=(30, 3),
                  delay=False):
@@ -32,7 +31,6 @@ class EnvironmentDataset(EnvironmentSofa):
                                  as_tcp_ip_client=as_tcp_ip_client,
                                  instance_id=instance_id,
                                  instance_nb=instance_nb,
-                                 visualization_db=visualization_db,
                                  constant=constant,
                                  data_size=data_size,
                                  delay=delay)
@@ -52,18 +50,17 @@ class EnvironmentDataset(EnvironmentSofa):
 
     def init_visualization(self):
 
-        if self.factory is not None:
-            # Point cloud (object will have id = 0)
-            self.factory.add_points(positions=self.MO['input'].position.value,
-                                    at=self.instance_id,
-                                    c='blue',
-                                    point_size=5)
+        # Point cloud (object will have id = 0)
+        self.factory.add_points(positions=self.MO['input'].position.value,
+                                at=self.instance_id,
+                                c='blue',
+                                point_size=5)
 
-            # Ground truth value (object will have id = 1)
-            self.factory.add_points(positions=self.MO['ground_truth'].position.value,
-                                    at=self.instance_id,
-                                    c='green',
-                                    point_size=10)
+        # Ground truth value (object will have id = 1)
+        self.factory.add_points(positions=self.MO['ground_truth'].position.value,
+                                at=self.instance_id,
+                                c='green',
+                                point_size=10)
 
     """
     ENVIRONMENT BEHAVIOR

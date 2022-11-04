@@ -11,7 +11,6 @@ import os
 import Sofa.Gui
 
 # DeepPhysX related imports
-from DeepPhysX.Core.Manager.EnvironmentManager import EnvironmentManager
 from DeepPhysX.Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
 
 # Working session imports

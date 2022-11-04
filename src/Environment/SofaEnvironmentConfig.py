@@ -62,31 +62,26 @@ class SofaEnvironmentConfig(BaseEnvironmentConfig):
         self.environment_class: Type[SofaEnvironment] = environment_class
 
     def start_client(self,
-                     idx: int = 1,
-                     visualization_db: Optional[str] = None) -> None:
+                     idx: int = 1) -> None:
         """
         Run a subprocess to start a TcpIpClient.
 
         :param idx: Index of client.
-        :param visualization_db: Path to the visualization Database to connect to.
         """
 
         script = join(dirname(modules[SofaEnvironment.__module__].__file__), 'launcherSofaEnvironment.py')
         run([executable, script, self.environment_file, self.environment_class.__name__,
-             self.ip_address, str(self.port), str(idx), str(self.number_of_thread), str(visualization_db)])
+             self.ip_address, str(self.port), str(idx), str(self.number_of_thread)])
 
-    def create_environment(self,
-                           visualization_db: Optional[str] = None) -> SofaEnvironment:
+    def create_environment(self) -> SofaEnvironment:
         """
         Create an Environment that will not be a TcpIpObject.
 
-        :param visualization_db: Path to the visualization Database to connect to.
         :return: Environment object.
         """
 
         # Create instance
         environment = self.environment_class(as_tcp_ip_client=False,
-                                             visualization_db=visualization_db,
                                              **self.env_kwargs)
         if not isinstance(environment, SofaEnvironment):
             raise TypeError(f"[{self.name}] The given 'environment_class'={self.environment_class} must be a "
