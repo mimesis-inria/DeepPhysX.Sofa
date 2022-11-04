@@ -10,22 +10,28 @@ import os
 import Sofa.Gui
 
 # DeepPhysX related imports
-from DeepPhysX.Sofa.Pipeline.SofaRunner import SofaRunner
+from DeepPhysX.Core.Network.BaseNetworkConfig import BaseNetworkConfig
+from DeepPhysX.Sofa.Pipeline.SofaPrediction import SofaPrediction
+from DeepPhysX.Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
 
 # Session related imports
-from T3_configuration import env_config, net_config
+from T1_environment import DummyEnvironment
+from T2_network import DummyNetwork
 
 
 def create_runner():
-    # Environment should not be a TcpIpClient
-    env_config.as_tcp_ip_client = False
+    # Create the Environment config
+    env_config = SofaEnvironmentConfig(environment_class=DummyEnvironment)
+
+    # Create the Network config
+    net_config = BaseNetworkConfig(network_class=DummyNetwork)
 
     # Runner
-    return SofaRunner(session_dir='sessions',
-                      session_name='online_training',
-                      environment_config=env_config,
-                      network_config=net_config,
-                      nb_steps=0)
+    return SofaPrediction(network_config=net_config,
+                          environment_config=env_config,
+                          session_dir='sessions',
+                          session_name='tutorial_online_training',
+                          step_nb=20)
 
 
 if __name__ == '__main__':
