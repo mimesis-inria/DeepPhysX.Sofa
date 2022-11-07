@@ -9,10 +9,8 @@ The SOFA simulation contains two models of an Armadillo :
 # Python related imports
 import os
 import sys
-
-os.environ['OPENBLAS_NUM_THREADS'] = '1'
-os.environ['MKL_NUM_THREADS'] = '1'
-import numpy as np
+from numpy import array
+from numpy.random import uniform, choice
 
 # Sofa & Caribou related imports
 import Sofa.Simulation
@@ -31,22 +29,14 @@ from utils import from_sparse_to_regular_grid
 class ArmadilloSofa(SofaEnvironment):
 
     def __init__(self,
-                 root_node,
-                 ip_address='localhost',
-                 port=10000,
-                 instance_id=0,
-                 number_of_instances=1,
                  as_tcp_ip_client=True,
-                 environment_manager=None):
+                 instance_id=1,
+                 instance_nb=1):
 
         SofaEnvironment.__init__(self,
-                                 root_node=root_node,
-                                 ip_address=ip_address,
-                                 port=port,
-                                 instance_id=instance_id,
-                                 number_of_instances=number_of_instances,
                                  as_tcp_ip_client=as_tcp_ip_client,
-                                 environment_manager=environment_manager)
+                                 instance_id=instance_id,
+                                 instance_nb=instance_nb)
 
         # With flag set to True, the model is created
         self.create_model = {'fem': True, 'nn': False}
@@ -243,12 +233,12 @@ class ArmadilloSofa(SofaEnvironment):
 
         # Reset forces
         for cff in self.cff:
-            cff.force.value = np.array([0., 0., 0.])
+            cff.force.value = array([0., 0., 0.])
 
         # Generate new forces
-        zones = np.random.choice(len(self.cff), size=p_forces.simultaneous, replace=False)
+        zones = choice(len(self.cff), size=p_forces.simultaneous, replace=False)
         for i in zones:
-            f = np.random.uniform(low=-1, high=1, size=(3,))
+            f = uniform(low=-1, high=1, size=(3,))
             f = f * p_forces.amplitude[p_forces.zones[i]]
             self.cff[i].force.value = f
             self.cff[i].showArrowSize.value = 10 * len(self.cff[i].forces.value)

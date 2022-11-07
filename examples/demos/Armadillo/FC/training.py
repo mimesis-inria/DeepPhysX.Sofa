@@ -8,19 +8,22 @@ Use 'python3 training.py <nb_thread>' to run the pipeline with newly created sam
 # Python related imports
 import os.path
 import sys
-import torch
+from torch.nn import MSELoss
+from torch.optim import Adam
+from numpy import multiply
 
 # DeepPhysX related imports
-from DeepPhysX.Core.Dataset.BaseDatasetConfig import BaseDatasetConfig
-from DeepPhysX.Core.Visualizer.VedoVisualizer import VedoVisualizer
-from DeepPhysX.Core.Pipelines.BaseTrainer import BaseTrainer
-from DeepPhysX.Torch.FC.FCConfig import FCConfig
+from DeepPhysX.Core.Pipelines.BaseTraining import BaseTraining
+from DeepPhysX.Core.Database.BaseDatabaseConfig import BaseDatabaseConfig
+from DeepPhysX.Core.Visualization.VedoVisualizer import VedoVisualizer
 from DeepPhysX.Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
+from DeepPhysX.Torch.FC.FCConfig import FCConfig
 
 # Working session imports
 from download import ArmadilloDownloader
+
 ArmadilloDownloader().get_session('run')
-from Environment.ArmadilloTraining import ArmadilloTraining, np
+from Environment.ArmadilloTraining import ArmadilloTraining
 
 # Training parameters
 nb_epochs = 200
@@ -32,44 +35,46 @@ lr = 1e-5
 def launch_trainer(dataset_dir, nb_env):
 
     # Environment config
-    env_config = SofaEnvironmentConfig(environment_class=ArmadilloTraining,
-                                       visualizer=VedoVisualizer,
-                                       number_of_thread=nb_env)
+    environment_config = SofaEnvironmentConfig(environment_class=ArmadilloTraining,
+                                               visualizer=VedoVisualizer,
+                                               number_of_thread=nb_env)
 
     # Get the data size
-    env_instance = env_config.create_environment(None)
-    input_size, output_size = env_instance.input_size, env_instance.output_size
-    env_instance.close()
-    del env_instance
+    env = environment_config.create_environment()
+    env.create()
+    env.init()
+    input_size, output_size = env.input_size, env.output_size
+    env.close()
+    del env
 
     # FC config
     nb_hidden_layers = 3
-    nb_neurons = np.multiply(*input_size)
-    nb_final_neurons = np.multiply(*output_size)
+    nb_neurons = multiply(*input_size)
+    nb_final_neurons = multiply(*output_size)
     layers_dim = [nb_neurons] + [nb_neurons for _ in range(nb_hidden_layers)] + [nb_final_neurons]
-    net_config = FCConfig(network_name='armadillo_FC',
-                          loss=torch.nn.MSELoss,
-                          lr=lr,
-                          optimizer=torch.optim.Adam,
-                          dim_output=3,
-                          dim_layers=layers_dim,
-                          biases=True)
+    network_config = FCConfig(lr=lr,
+                              loss=MSELoss,
+                              optimizer=Adam,
+                              dim_layers=layers_dim,
+                              dim_output=3,
+                              biases=True)
 
     # Dataset config
-    dataset_config = BaseDatasetConfig(partition_size=1,
-                                       shuffle_dataset=True,
-                                       normalize=True,
-                                       dataset_dir=dataset_dir)
+    database_config = BaseDatabaseConfig(existing_dir=dataset_dir,
+                                         max_file_size=1,
+                                         shuffle=True,
+                                         normalize=True)
 
     # Trainer
-    trainer = BaseTrainer(session_dir='sessions',
-                          session_name='armadillo_training_user',
-                          dataset_config=dataset_config,
-                          environment_config=env_config,
-                          network_config=net_config,
-                          nb_epochs=nb_epochs,
-                          nb_batches=nb_batch,
-                          batch_size=batch_size)
+    trainer = BaseTraining(network_config=network_config,
+                           database_config=database_config,
+                           environment_config=environment_config if dataset_dir is None else None,
+                           session_dir='sessions',
+                           session_name='armadillo_training_user',
+                           epoch_nb=nb_epochs,
+                           batch_nb=nb_batch,
+                           batch_size=batch_size,
+                           debug=True)
 
     # Launch the training session
     trainer.execute()

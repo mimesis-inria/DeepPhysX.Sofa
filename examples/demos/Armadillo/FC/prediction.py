@@ -8,50 +8,51 @@ Use 'python3 validation.py -v' to render predictions with Vedo.
 # Python related imports
 import os
 import sys
+from numpy import multiply
 
 # Sofa related imports
 import Sofa.Gui
 
 # DeepPhysX related imports
-from DeepPhysX.Core.Dataset.BaseDatasetConfig import BaseDatasetConfig
-from DeepPhysX.Core.Visualizer.VedoVisualizer import VedoVisualizer
-from DeepPhysX.Core.Pipelines.BaseRunner import BaseRunner
+from DeepPhysX.Core.Database.BaseDatabaseConfig import BaseDatabaseConfig
+from DeepPhysX.Core.Visualization.VedoVisualizer import VedoVisualizer
+from DeepPhysX.Core.Pipelines.BasePrediction import BasePrediction
 from DeepPhysX.Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
-from DeepPhysX.Sofa.Pipeline.SofaRunner import SofaRunner
+from DeepPhysX.Sofa.Pipeline.SofaPrediction import SofaPrediction
 from DeepPhysX.Torch.FC.FCConfig import FCConfig
 
 # Session related imports
 from download import ArmadilloDownloader
 ArmadilloDownloader().get_session('run')
-from Environment.ArmadilloPrediction import ArmadilloPrediction, np
+from Environment.ArmadilloPrediction import ArmadilloPrediction
 
 
 def create_runner(visualizer=False):
 
     # Environment config
-    env_config = SofaEnvironmentConfig(environment_class=ArmadilloPrediction,
-                                       param_dict={'visualizer': visualizer},
-                                       visualizer=VedoVisualizer if visualizer else None,
-                                       as_tcp_ip_client=False)
+    environment_config = SofaEnvironmentConfig(environment_class=ArmadilloPrediction,
+                                               visualizer=VedoVisualizer if visualizer else None,
+                                               env_kwargs={'visualizer': visualizer})
 
     # Get the data size
-    env_instance = env_config.create_environment(None)
-    input_size, output_size = env_instance.input_size, env_instance.output_size
-    env_instance.close()
-    del env_instance
+    env = environment_config.create_environment()
+    env.create()
+    env.init()
+    input_size, output_size = env.input_size, env.output_size
+    env.close()
+    del env
 
     # FC config
     nb_hidden_layers = 3
-    nb_neurons = np.multiply(*input_size)
-    nb_final_neurons = np.multiply(*output_size)
+    nb_neurons = multiply(*input_size)
+    nb_final_neurons = multiply(*output_size)
     layers_dim = [nb_neurons] + [nb_neurons for _ in range(nb_hidden_layers)] + [nb_final_neurons]
-    net_config = FCConfig(network_name='armadillo_FC',
-                          dim_output=3,
+    net_config = FCConfig(dim_output=3,
                           dim_layers=layers_dim,
                           biases=True)
 
     # Dataset config
-    dataset_config = BaseDatasetConfig(normalize=True)
+    database_config = BaseDatabaseConfig(normalize=True)
 
     # Define trained network session
     dpx_session = 'armadillo_dpx'
@@ -61,19 +62,20 @@ def create_runner(visualizer=False):
 
     # Runner
     if visualizer:
-        return BaseRunner(session_dir='sessions',
-                          session_name=session_name,
-                          dataset_config=dataset_config,
-                          environment_config=env_config,
-                          network_config=net_config,
-                          nb_steps=100)
+        return BasePrediction(network_config=net_config,
+                              database_config=database_config,
+                              environment_config=environment_config,
+                              session_dir='sessions',
+                              session_name=session_name,
+                              step_nb=100,
+                              record=False)
     else:
-        return SofaRunner(session_dir='sessions',
-                          session_name=session_name,
-                          dataset_config=dataset_config,
-                          environment_config=env_config,
-                          network_config=net_config,
-                          nb_steps=0)
+        return SofaPrediction(network_config=net_config,
+                              database_config=database_config,
+                              environment_config=environment_config,
+                              session_dir='sessions',
+                              session_name=session_name,
+                              step_nb=-1)
 
 
 if __name__ == '__main__':
@@ -96,7 +98,6 @@ if __name__ == '__main__':
         # Create and launch runner
         runner = create_runner(visualizer)
         runner.execute()
-        runner.close()
 
     else:
 
