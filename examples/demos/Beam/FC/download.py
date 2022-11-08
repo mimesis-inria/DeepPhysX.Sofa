@@ -16,13 +16,13 @@ class BeamDownloader(DataDownloader):
     def __init__(self,):
         DataDownloader.__init__(self, DOI, session_name)
 
-        self.categories = {'models': [],
+        self.categories = {'models': [211],
                            'session': [266],
                            'network': [219],
                            'stats': [216],
-                           'dataset_info': [262],
-                           'dataset_valid': [263, 264],
-                           'dataset_train': [261, 265]}
+                           'dataset_info': [324],
+                           'dataset_valid': [326],
+                           'dataset_train': [325]}
 
 
 if __name__ == '__main__':

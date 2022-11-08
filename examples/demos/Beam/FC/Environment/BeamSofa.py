@@ -9,10 +9,8 @@ The SOFA simulation contains two models of a Beam:
 # Python related imports
 import os
 import sys
-
-os.environ['OPENBLAS_NUM_THREADS'] = '1'
-os.environ['MKL_NUM_THREADS'] = '1'
-import numpy as np
+from numpy.random import randint, uniform
+from numpy.linalg import norm
 
 # Sofa related imports
 import Sofa.Simulation
@@ -29,22 +27,14 @@ from parameters import p_grid
 class BeamSofa(SofaEnvironment):
 
     def __init__(self,
-                 root_node,
-                 ip_address='localhost',
-                 port=10000,
-                 instance_id=0,
-                 number_of_instances=1,
                  as_tcp_ip_client=True,
-                 environment_manager=None):
+                 instance_id=1,
+                 instance_nb=1):
 
         SofaEnvironment.__init__(self,
-                                 root_node=root_node,
-                                 ip_address=ip_address,
-                                 port=port,
-                                 instance_id=instance_id,
-                                 number_of_instances=number_of_instances,
                                  as_tcp_ip_client=as_tcp_ip_client,
-                                 environment_manager=environment_manager)
+                                 instance_id=instance_id,
+                                 instance_nb=instance_nb)
 
         # With flag set to True, the model is created
         self.create_model = {'fem': True, 'nn': False}
@@ -199,13 +189,13 @@ class BeamSofa(SofaEnvironment):
         force_node = self.root.fem if self.create_model['fem'] else self.root.nn
 
         # Define random box
-        side = np.random.randint(0, 6)
-        x_min = p_grid.min[0] if side == 0 else np.random.randint(p_grid.min[0], p_grid.max[0] - 10)
-        x_max = p_grid.max[0] if side == 1 else np.random.randint(x_min + 10, p_grid.max[0] + 1)
-        y_min = p_grid.min[1] if side == 2 else np.random.randint(p_grid.min[1], p_grid.max[1] - 10)
-        y_max = p_grid.max[1] if side == 3 else np.random.randint(y_min + 10, p_grid.max[1] + 1)
-        z_min = p_grid.min[2] if side == 4 else np.random.randint(p_grid.min[2], p_grid.max[2] - 10)
-        z_max = p_grid.max[2] if side == 5 else np.random.randint(z_min + 10, p_grid.max[2] + 1)
+        side = randint(0, 6)
+        x_min = p_grid.min[0] if side == 0 else randint(p_grid.min[0], p_grid.max[0] - 10)
+        x_max = p_grid.max[0] if side == 1 else randint(x_min + 10, p_grid.max[0] + 1)
+        y_min = p_grid.min[1] if side == 2 else randint(p_grid.min[1], p_grid.max[1] - 10)
+        y_max = p_grid.max[1] if side == 3 else randint(y_min + 10, p_grid.max[1] + 1)
+        z_min = p_grid.min[2] if side == 4 else randint(p_grid.min[2], p_grid.max[2] - 10)
+        z_max = p_grid.max[2] if side == 5 else randint(z_min + 10, p_grid.max[2] + 1)
 
         # Set the new bounding box
         force_node.removeObject(self.cff_box)
@@ -218,9 +208,9 @@ class BeamSofa(SofaEnvironment):
         indices = list(set(indices).intersection(set(self.idx_surface)))
 
         # Create a random force vector
-        F = np.random.uniform(low=-1, high=1, size=(3,))
-        K = np.random.randint(10, 20)
-        F = K * (F / np.linalg.norm(F))
+        F = uniform(low=-1, high=1, size=(3,))
+        K = randint(10, 20)
+        F = K * (F / norm(F))
 
         # Update force field
         force_node.removeObject(self.cff)
