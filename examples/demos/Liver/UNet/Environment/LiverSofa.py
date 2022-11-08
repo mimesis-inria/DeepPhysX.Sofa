@@ -9,10 +9,9 @@ The SOFA simulation contains two models of a Liver:
 # Python related imports
 import os
 import sys
-
-os.environ['OPENBLAS_NUM_THREADS'] = '1'
-os.environ['MKL_NUM_THREADS'] = '1'
-import numpy as np
+from numpy import array, empty, concatenate
+from numpy.random import randint, uniform
+from numpy.linalg import norm
 
 # Sofa & Caribou related imports
 import Sofa.Simulation
@@ -31,22 +30,14 @@ from utils import from_sparse_to_regular_grid
 class LiverSofa(SofaEnvironment):
 
     def __init__(self,
-                 root_node,
-                 ip_address='localhost',
-                 port=10000,
-                 instance_id=0,
-                 number_of_instances=1,
                  as_tcp_ip_client=True,
-                 environment_manager=None):
+                 instance_id=1,
+                 instance_nb=1):
 
         SofaEnvironment.__init__(self,
-                                 root_node=root_node,
-                                 ip_address=ip_address,
-                                 port=port,
-                                 instance_id=instance_id,
-                                 number_of_instances=number_of_instances,
                                  as_tcp_ip_client=as_tcp_ip_client,
-                                 environment_manager=environment_manager)
+                                 instance_id=instance_id,
+                                 instance_nb=instance_nb)
 
         # With flag set to True, the model is created
         self.create_model = {'fem': True, 'nn': False}
@@ -234,30 +225,30 @@ class LiverSofa(SofaEnvironment):
             self.n_sparse_grid_mo.position.value = self.n_sparse_grid_mo.rest_position.value
 
         # Build and set forces vectors
-        selected_centers = np.empty([0, 3])
+        selected_centers = empty([0, 3])
         surface_mo = self.f_surface_mo if self.create_model['fem'] else self.n_surface_mo
         for i in range(p_forces.nb_simultaneous_forces):
             # Pick up a random visible surface point, select the points in a centered sphere
-            current_point = surface_mo.position.value[np.random.randint(len(surface_mo.position.value))]
+            current_point = surface_mo.position.value[randint(len(surface_mo.position.value))]
             # Check distance to other points
             distance_check = True
             for p in selected_centers:
-                distance = np.linalg.norm(current_point - p)
+                distance = norm(current_point - p)
                 if distance < p_forces.inter_distance_thresh:
                     distance_check = False
                     break
             empty_indices = False
             if distance_check:
                 # Add center to the selection
-                selected_centers = np.concatenate((selected_centers, np.array([current_point])))
+                selected_centers = concatenate((selected_centers, array([current_point])))
                 # Set sphere center
                 self.sphere[i].centers.value = [current_point]
                 # Build force vector
                 if len(self.sphere[i].indices.value) > 0:
-                    f = np.random.uniform(low=-1, high=1, size=(3,))
+                    f = uniform(low=-1, high=1, size=(3,))
                     # from random import choice
                     # f = np.array([choice([-1, 1]), choice([-1, 1]), choice([-1, 1])])
-                    f = (f / np.linalg.norm(f)) * p_forces.amplitude
+                    f = (f / norm(f)) * p_forces.amplitude
                     self.force_field[i].indices.value = self.sphere[i].indices.array()
                     self.force_field[i].force.value = f
                 else:

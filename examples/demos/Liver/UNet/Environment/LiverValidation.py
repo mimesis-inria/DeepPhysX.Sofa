@@ -12,43 +12,30 @@ Training data are produced at each time step :
 # Python related imports
 import os
 import sys
+import numpy as np
 
 # Session related imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from LiverTraining import LiverTraining, np
+from LiverTraining import LiverTraining
 from parameters import p_grid, p_liver
 
 
 class LiverValidation(LiverTraining):
 
     def __init__(self,
-                 root_node,
-                 ip_address='localhost',
-                 port=10000,
-                 instance_id=0,
-                 number_of_instances=1,
                  as_tcp_ip_client=True,
-                 environment_manager=None):
+                 instance_id=1,
+                 instance_nb=1,
+                 compute_sample=True):
 
         LiverTraining.__init__(self,
-                               root_node=root_node,
-                               ip_address=ip_address,
-                               port=port,
-                               instance_id=instance_id,
-                               number_of_instances=number_of_instances,
                                as_tcp_ip_client=as_tcp_ip_client,
-                               environment_manager=environment_manager)
+                               instance_id=instance_id,
+                               instance_nb=instance_nb)
 
         self.l2_error, self.MSE_error = [], []
         self.l2_deformation, self.MSE_deformation = [], []
-        self.compute_sample = True
-
-    def recv_parameters(self, param_dict):
-        """
-        Exploit received parameters before scene creation.
-        """
-
-        self.compute_sample = param_dict['compute_sample'] if 'compute_sample' in param_dict else self.compute_sample
+        self.compute_sample = compute_sample
 
     def createFEM(self):
         """
@@ -90,14 +77,6 @@ class LiverValidation(LiverTraining):
             self.f_visu = self.root.fem.visual.addObject('OglModel', src='@../../Mesh', color='green')
             self.root.fem.visual.addObject('BarycentricMapping', input='@../SparseGridMO', output='@./')
 
-    def send_visualization(self):
-        """
-        Define and send the initial visualization data dictionary. Automatically called whn creating Environment.
-        """
-
-        # Nothing to visualize since the predictions are run in SOFA GUI.
-        return self.factory.objects_dict
-
     def onAnimateBeginEvent(self, event):
         """
         Called within the Sofa pipeline at the beginning of the time step. Define force vector.
@@ -118,18 +97,18 @@ class LiverValidation(LiverTraining):
         """
 
         # Compute training data
-        input_array = self.compute_input() if self.sample_in is None else self.sample_in
-        output_array = self.compute_output() if self.sample_in is None else self.sample_out
+        input_array = self.compute_input() if self.compute_sample else self.sample_training['input']
+        output_array = self.compute_output() if self.compute_sample else self.sample_training['ground_truth']
 
         # Manually update FEM model if sample from Dataset
-        if self.sample_in is not None:
-            U = np.reshape(self.sample_out, self.data_size)
+        if not self.compute_sample:
+            U = np.reshape(self.sample_training['ground_truth'], self.data_size)
             U_sparse = U[self.idx_sparse_to_regular]
             self.f_sparse_grid_mo.position.value = self.f_sparse_grid_mo.rest_position.value + U_sparse
 
         # Send training data
-        self.set_training_data(input_array=input_array,
-                               output_array=output_array)
+        self.set_training_data(input=input_array,
+                               ground_truth=output_array)
 
     def check_sample(self):
         """

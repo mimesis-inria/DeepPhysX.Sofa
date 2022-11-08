@@ -10,19 +10,19 @@ import os
 import sys
 
 # DeepPhysX related imports
-from DeepPhysX.Core.Pipelines.BaseDataGenerator import BaseDataGenerator
-from DeepPhysX.Core.Dataset.BaseDatasetConfig import BaseDatasetConfig
-from DeepPhysX.Core.Visualizer.VedoVisualizer import VedoVisualizer
+from DeepPhysX.Core.Pipelines.BaseDataGeneration import BaseDataGeneration
+from DeepPhysX.Core.Database.BaseDatabaseConfig import BaseDatabaseConfig
+from DeepPhysX.Core.Visualization.VedoVisualizer import VedoVisualizer
 from DeepPhysX.Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
 
 # Session related imports
 from download import LiverDownloader
-# LiverDownloader().get_session('run')
+LiverDownloader().get_session('run')
 from Environment.LiverTraining import LiverTraining
 
 # Dataset parameters
-nb_batches = {'Training': 500, 'Validation': 50}
-batch_size = {'Training': 32, 'Validation': 10}
+nb_batches = {'training': 500, 'validation': 50}
+batch_size = {'training': 32,  'validation': 10}
 
 
 def launch_data_generation(dataset_dir, dataset_mode):
@@ -31,20 +31,21 @@ def launch_data_generation(dataset_dir, dataset_mode):
     environment_config = SofaEnvironmentConfig(environment_class=LiverTraining,
                                                visualizer=VedoVisualizer,
                                                as_tcp_ip_client=True,
-                                               number_of_thread=10,
-                                               port=10000)
+                                               number_of_thread=4)
 
     # Dataset configuration
-    dataset_config = BaseDatasetConfig(dataset_dir=dataset_dir,
-                                       partition_size=1,
-                                       use_mode=dataset_mode)
+    database_config = BaseDatabaseConfig(existing_dir=dataset_dir,
+                                         max_file_size=1,
+                                         mode=dataset_mode,
+                                         normalize=True)
 
     # Create DataGenerator
-    data_generator = BaseDataGenerator(session_name='sessions/liver_data_user',
-                                       environment_config=environment_config,
-                                       dataset_config=dataset_config,
-                                       nb_batches=nb_batches[dataset_mode],
-                                       batch_size=batch_size[dataset_mode])
+    data_generator = BaseDataGeneration(environment_config=environment_config,
+                                        database_config=database_config,
+                                        session_dir='sessions',
+                                        session_name='liver_data_user',
+                                        batch_nb=nb_batches[dataset_mode],
+                                        batch_size=batch_size[dataset_mode])
 
     # Launch the data generation session
     data_generator.execute()
@@ -57,13 +58,13 @@ if __name__ == '__main__':
     dataset = user_session if os.path.exists(user_session) else None
 
     # Get dataset mode
-    mode = 'Training'
+    mode = 'training'
     if len(sys.argv) > 1:
         if sys.argv[1] != '-v':
             print("Script option must be '-v' to produce validation dataset."
                   "By default, training dataset is produced.")
             quit(0)
-        mode = 'Validation'
+        mode = 'validation'
 
     # Launch pipeline
     launch_data_generation(dataset, mode)

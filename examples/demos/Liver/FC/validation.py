@@ -8,50 +8,53 @@ Use 'python3 validation.py -e' to run the pipeline with newly created samples in
 # Python related imports
 import os
 import sys
+from numpy import multiply
 
 # Sofa related imports
 import Sofa.Gui
 
 # DeepPhysX related imports
-from DeepPhysX.Core.Dataset.BaseDatasetConfig import BaseDatasetConfig
-from DeepPhysX.Sofa.Pipeline.SofaRunner import SofaRunner
-from DeepPhysX.Torch.FC.FCConfig import FCConfig
+from DeepPhysX.Sofa.Pipeline.SofaPrediction import SofaPrediction
+from DeepPhysX.Core.Database.BaseDatabaseConfig import BaseDatabaseConfig
 from DeepPhysX.Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
+from DeepPhysX.Torch.FC.FCConfig import FCConfig
 
 # Session related imports
 from download import LiverDownloader
+
 LiverDownloader().get_session('run')
-from Environment.LiverValidation import LiverValidation, np
+from Environment.LiverValidation import LiverValidation
 
 
 def create_runner(dataset_dir):
 
     # Environment config
-    env_config = SofaEnvironmentConfig(environment_class=LiverValidation,
-                                       param_dict={'compute_sample': dataset_dir is None},
-                                       as_tcp_ip_client=False)
+    environment_config = SofaEnvironmentConfig(environment_class=LiverValidation,
+                                               load_samples=dataset_dir is not None,
+                                               env_kwargs={'compute_sample': dataset_dir is None})
 
     # Get the data size
-    env_instance = env_config.create_environment(None)
-    input_size, output_size = env_instance.input_size, env_instance.output_size
-    env_instance.close()
-    del env_instance
+    env = environment_config.create_environment()
+    env.create()
+    env.init()
+    input_size, output_size = env.input_size, env.output_size
+    env.close()
+    del env
 
     # FC config
     nb_hidden_layers = 3
-    nb_neurons = np.multiply(*input_size)
-    nb_final_neurons = np.multiply(*output_size)
+    nb_neurons = multiply(*input_size)
+    nb_final_neurons = multiply(*output_size)
     layers_dim = [nb_neurons] + [nb_neurons for _ in range(nb_hidden_layers)] + [nb_final_neurons]
-    net_config = FCConfig(network_name='liver_FC',
-                          dim_output=3,
-                          dim_layers=layers_dim,
-                          biases=True)
+    network_config = FCConfig(dim_output=3,
+                              dim_layers=layers_dim,
+                              biases=True)
 
     # Dataset config
-    dataset_config = BaseDatasetConfig(shuffle_dataset=True,
-                                       normalize=True,
-                                       dataset_dir=dataset_dir,
-                                       use_mode=None if dataset_dir is None else 'Validation')
+    database_config = BaseDatabaseConfig(existing_dir=dataset_dir,
+                                         shuffle=True,
+                                         normalize=True,
+                                         mode=None if dataset_dir is None else 'validation')
 
     # Define trained network session
     dpx_session = 'liver_dpx'
@@ -60,12 +63,12 @@ def create_runner(dataset_dir):
     session_name = user_session if os.path.exists('sessions/' + user_session) else dpx_session
 
     # Runner
-    return SofaRunner(session_dir='sessions',
-                      session_name=session_name,
-                      dataset_config=dataset_config,
-                      environment_config=env_config,
-                      network_config=net_config,
-                      nb_steps=500)
+    return SofaPrediction(environment_config=environment_config,
+                          network_config=network_config,
+                          database_config=database_config,
+                          session_dir='sessions',
+                          session_name=session_name,
+                          nb_steps=500)
 
 
 if __name__ == '__main__':
