@@ -1,5 +1,7 @@
 # DeepPhysX.Sofa
 
+![logo](docs/source/_static/image/logo.png)
+
 This python package is part of the [DeepPhysX](https://github.com/mimesis-inria/DeepPhysX) project.
 It contains adaptations of some Core components that are compatible with the [SOFA](https://www.sofa-framework.org/) 
 framework.

@@ -12,7 +12,7 @@ SOFA
     * - | :ref:`environment.sofaenvironment`
         | :ref:`environment.sofaenvironmentconfig`
 
-      - | :ref:`pipeline.sofarunner`
+      - | :ref:`pipeline.sofaprediction`
 
 
 .. toctree::

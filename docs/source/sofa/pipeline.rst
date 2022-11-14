@@ -1,13 +1,13 @@
 Pipeline
 ========
 
-.. _pipeline.sofarunner:
+.. _pipeline.sofaprediction:
 
-SofaRunner
-----------
+SofaPrediction
+--------------
 
 Base:
-:py:class:`BaseRunner.BaseRunner`
+:py:class:`BasePrediction.BasePrediction`
 
-.. autoclass:: SofaRunner.SofaRunner
-    :members: onAnimateEndEvent, run_begin, run_end, running_condition, sample_begin, sample_end, close
+.. autoclass:: SofaPrediction.SofaPrediction
+    :members:
