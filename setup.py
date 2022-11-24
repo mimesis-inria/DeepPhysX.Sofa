@@ -4,13 +4,13 @@ from os.path import join
 PROJECT = 'DeepPhysX'
 PACKAGE = 'Sofa'
 
-packages = [f'{PROJECT}.{PACKAGE}']
-packages_dir = {f'{PROJECT}.{PACKAGE}': 'src'}
+packages = []
+packages_dir = {}
 
 # Configure packages list and directories
-for sub_package in find_packages(where='src'):
-    packages.append(f'{PROJECT}.{PACKAGE}.{sub_package}')
-    packages_dir[f'{PROJECT}.{PACKAGE}.{sub_package}'] = join('src', *sub_package.split('.'))
+for subpackage in find_packages(where='src'):
+    packages.append(f'{PROJECT}.{subpackage}')
+    packages_dir[f'{PROJECT}.{subpackage}'] = join('src', *subpackage.split('.'))
 
 # Add examples as subpackages
 packages.append(f'{PROJECT}.examples.{PACKAGE}')
@@ -33,4 +33,5 @@ setup(name=f'{PROJECT}.{PACKAGE}',
       url='https://github.com/mimesis-inria/DeepPhysX.Sofa',
       packages=packages,
       package_dir=packages_dir,
+      namespace_packages=[PROJECT],
       install_requires=['DeepPhysX'])
