@@ -11,19 +11,22 @@ import os
 import Sofa.Gui
 
 # DeepPhysX related imports
-from DeepPhysX.Core.Manager.EnvironmentManager import EnvironmentManager
+from DeepPhysX.Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
 
 # Working session imports
-from T3_configuration import env_config
+from T1_environment import DummyEnvironment
 
 
 def create_environment():
-    # Environment should not be a TcpIpClient
-    env_config.as_tcp_ip_client = False
 
-    # Create DummyEnvironment within EnvironmentManager
-    environment_manager = EnvironmentManager(environment_config=env_config)
-    return environment_manager.environment
+    # Create the Environment config
+    env_config = SofaEnvironmentConfig(environment_class=DummyEnvironment)
+
+    # Create DummyEnvironment
+    env = env_config.create_environment()
+    env.create()
+    env.init()
+    return env
 
 
 if __name__ == '__main__':

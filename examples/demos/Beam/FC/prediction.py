@@ -13,11 +13,11 @@ import sys
 import Sofa.Gui
 
 # DeepPhysX related imports
-from DeepPhysX.Core.Dataset.BaseDatasetConfig import BaseDatasetConfig
-from DeepPhysX.Core.Visualizer.VedoVisualizer import VedoVisualizer
-from DeepPhysX.Core.Pipelines.BaseRunner import BaseRunner
+from DeepPhysX.Core.Database.BaseDatabaseConfig import BaseDatabaseConfig
+from DeepPhysX.Core.Visualization.VedoVisualizer import VedoVisualizer
+from DeepPhysX.Core.Pipelines.BasePrediction import BasePrediction
 from DeepPhysX.Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
-from DeepPhysX.Sofa.Pipeline.SofaRunner import SofaRunner
+from DeepPhysX.Sofa.Pipeline.SofaPrediction import SofaPrediction
 from DeepPhysX.Torch.FC.FCConfig import FCConfig
 
 # Session related imports
@@ -28,22 +28,20 @@ from Environment.BeamPrediction import BeamPrediction, p_grid
 def create_runner(visualizer=False):
 
     # Environment config
-    env_config = SofaEnvironmentConfig(environment_class=BeamPrediction,
-                                       param_dict={'visualizer': visualizer},
-                                       visualizer=VedoVisualizer if visualizer else None,
-                                       as_tcp_ip_client=False)
+    environment_config = SofaEnvironmentConfig(environment_class=BeamPrediction,
+                                               visualizer=VedoVisualizer if visualizer else None,
+                                               env_kwargs={'visualizer': visualizer})
 
     # FC config
     nb_hidden_layers = 2
     nb_neurons = p_grid.nb_nodes * 3
     layers_dim = [nb_neurons] + [nb_neurons for _ in range(nb_hidden_layers + 1)] + [nb_neurons]
-    net_config = FCConfig(network_name='beam_FC',
-                          dim_output=3,
-                          dim_layers=layers_dim,
-                          biases=True)
+    network_config = FCConfig(dim_output=3,
+                              dim_layers=layers_dim,
+                              biases=True)
 
     # Dataset config
-    dataset_config = BaseDatasetConfig(normalize=True)
+    database_config = BaseDatabaseConfig(normalize=True)
 
     # Define trained network session
     dpx_session = 'beam_dpx'
@@ -53,19 +51,19 @@ def create_runner(visualizer=False):
 
     # Runner
     if visualizer:
-        return BaseRunner(session_dir='sessions',
-                          session_name=session_name,
-                          dataset_config=dataset_config,
-                          environment_config=env_config,
-                          network_config=net_config,
-                          nb_steps=100)
+        return BasePrediction(network_config=network_config,
+                              database_config=database_config,
+                              environment_config=environment_config,
+                              session_dir='sessions',
+                              session_name=session_name,
+                              step_nb=100)
     else:
-        return SofaRunner(session_dir='sessions',
-                          session_name=session_name,
-                          dataset_config=dataset_config,
-                          environment_config=env_config,
-                          network_config=net_config,
-                          nb_steps=0)
+        return SofaPrediction(network_config=network_config,
+                              database_config=database_config,
+                              environment_config=environment_config,
+                              session_dir='sessions',
+                              session_name=session_name,
+                              step_nb=-1)
 
 
 if __name__ == '__main__':
@@ -88,7 +86,6 @@ if __name__ == '__main__':
         # Create and launch runner
         runner = create_runner(visualizer)
         runner.execute()
-        runner.close()
 
     else:
 

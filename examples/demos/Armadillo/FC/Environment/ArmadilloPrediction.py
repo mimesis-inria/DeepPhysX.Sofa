@@ -10,54 +10,39 @@ Training data are produced at each time step :
 # Python imports
 import os
 import sys
+import numpy as np
 
 # Working session imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from ArmadilloTraining import ArmadilloTraining, np
+from ArmadilloTraining import ArmadilloTraining
 from parameters import p_forces, p_model
 
 
 class ArmadilloPrediction(ArmadilloTraining):
 
     def __init__(self,
-                 root_node,
-                 ip_address='localhost',
-                 port=10000,
-                 instance_id=0,
-                 number_of_instances=1,
                  as_tcp_ip_client=True,
-                 environment_manager=None):
+                 instance_id=1,
+                 instance_nb=1,
+                 visualizer=None):
 
         ArmadilloTraining.__init__(self,
-                                   root_node=root_node,
-                                   ip_address=ip_address,
-                                   port=port,
-                                   instance_id=instance_id,
-                                   number_of_instances=number_of_instances,
                                    as_tcp_ip_client=as_tcp_ip_client,
-                                   environment_manager=environment_manager)
+                                   instance_id=instance_id,
+                                   instance_nb=instance_nb)
 
         self.create_model['fem'] = False
-        self.visualizer = False
+        self.visualizer = visualizer
 
         # Force pattern
-        self.amplitudes = None
+        step = 0.1 if self.visualizer else 0.03
+        self.amplitudes = np.concatenate((np.arange(0, 1, step),
+                                          np.arange(1, 0, -step)))
         self.idx_amplitude = 0
         self.force_value = None
         self.idx_zone = 0
 
-    def recv_parameters(self, param_dict):
-        """
-        Exploit received parameters before scene creation.
-        """
-
-        # Receive visualizer option (either True for Vedo, False for SOFA GUI)
-        self.visualizer = param_dict['visualizer'] if 'visualizer' in param_dict else self.visualizer
-        step = 0.1 if self.visualizer else 0.03
-        self.amplitudes = np.concatenate((np.arange(0, 1, step),
-                                          np.arange(1, 0, -step)))
-
-    def send_visualization(self):
+    def init_visualization(self):
         """
         Define and send the initial visualization data dictionary. Automatically called when creating Environment.
         """
@@ -65,18 +50,15 @@ class ArmadilloPrediction(ArmadilloTraining):
         # Nothing to visualize if the predictions are run in SOFA GUI.
         if self.visualizer:
             # Add the mesh model (object will have id = 0)
-            self.factory.add_object(object_type='Mesh', data_dict={'positions': self.n_visu.position.value.copy(),
-                                                                   'cells': self.n_visu.triangles.value.copy(),
-                                                                   'at': self.instance_id,
-                                                                   'c': 'orange'})
-
+            self.factory.add_mesh(positions=self.n_visu.position.value.copy(),
+                                  cells=self.n_visu.triangles.value.copy(),
+                                  at=self.instance_id,
+                                  c='orange')
             # Arrows representing the force fields (object will have id = 1)
-            self.factory.add_object(object_type='Arrows', data_dict={'positions': [0, 0, 0],
-                                                                     'vectors': [0., 0., 0.],
-                                                                     'c': 'green',
-                                                                     'at': self.instance_id})
-
-        return self.factory.objects_dict
+            self.factory.add_arrows(positions=np.array([0., 0., 0.]),
+                                    vectors=np.array([0., 0., 0.]),
+                                    c='green',
+                                    at=self.instance_id)
 
     def onAnimateBeginEvent(self, event):
         """
@@ -101,12 +83,9 @@ class ArmadilloPrediction(ArmadilloTraining):
         Called within the Sofa pipeline at the end of the time step. Compute training data and apply prediction.
         """
 
-        # Compute training data
-        input_array = self.compute_input()
-
         # Send training data
-        self.set_training_data(input_array=input_array,
-                               output_array=np.array([]))
+        self.set_training_data(input=self.compute_input(),
+                               ground_truth=np.array([]))
 
     def check_sample(self):
         """
@@ -132,12 +111,11 @@ class ArmadilloPrediction(ArmadilloTraining):
         """
 
         # Update mesh positions
-        self.factory.update_object_dict(object_id=0, new_data_dict={'position': self.n_visu.position.value.copy()})
-
+        self.factory.update_mesh(object_id=0,
+                                 positions=self.n_visu.position.value.copy())
         # Update force field
-        position = list(self.n_surface_mo.position.value[self.cff[self.idx_zone].indices.value])
-        vector = list(0.25 * self.cff[self.idx_zone].forces.value / p_model.scale)
-        self.factory.update_object_dict(object_id=1, new_data_dict={'positions': position,
-                                                                    'vectors': vector})
+        self.factory.update_arrows(object_id=1,
+                                   positions=self.n_surface_mo.position.value[self.cff[self.idx_zone].indices.value],
+                                   vectors=0.25 * self.cff[self.idx_zone].forces.value / p_model.scale)
         # Send updated data
-        self.update_visualisation(visu_dict=self.factory.updated_object_dict)
+        self.update_visualisation()

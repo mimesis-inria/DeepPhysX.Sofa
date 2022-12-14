@@ -13,10 +13,10 @@ import sys
 import Sofa.Gui
 
 # DeepPhysX related imports
-from DeepPhysX.Core.Dataset.BaseDatasetConfig import BaseDatasetConfig
-from DeepPhysX.Sofa.Pipeline.SofaRunner import SofaRunner
-from DeepPhysX.Torch.UNet.UNetConfig import UNetConfig
+from DeepPhysX.Sofa.Pipeline.SofaPrediction import SofaPrediction
+from DeepPhysX.Core.Database.BaseDatabaseConfig import BaseDatabaseConfig
 from DeepPhysX.Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
+from DeepPhysX.Torch.UNet.UNetConfig import UNetConfig
 
 # Session related imports
 from download import BeamDownloader
@@ -27,27 +27,26 @@ from Environment.parameters import grid_resolution
 def create_runner(dataset_dir):
 
     # Environment config
-    env_config = SofaEnvironmentConfig(environment_class=BeamValidation,
-                                       param_dict={'compute_sample': dataset_dir is None},
-                                       as_tcp_ip_client=False)
+    environment_config = SofaEnvironmentConfig(environment_class=BeamValidation,
+                                               load_samples=dataset_dir is not None,
+                                               env_kwargs={'compute_sample': dataset_dir is None})
 
     # UNet config
-    net_config = UNetConfig(network_name='beam_UNet',
-                            input_size=grid_resolution.tolist(),
-                            nb_dims=3,
-                            nb_input_channels=3,
-                            nb_first_layer_channels=128,
-                            nb_output_channels=3,
-                            nb_steps=3,
-                            two_sublayers=True,
-                            border_mode='same',
-                            skip_merge=False)
+    network_config = UNetConfig(input_size=grid_resolution.tolist(),
+                                nb_dims=3,
+                                nb_input_channels=3,
+                                nb_first_layer_channels=128,
+                                nb_output_channels=3,
+                                nb_steps=3,
+                                two_sublayers=True,
+                                border_mode='same',
+                                skip_merge=False)
 
     # Dataset config
-    dataset_config = BaseDatasetConfig(shuffle_dataset=True,
-                                       normalize=True,
-                                       dataset_dir=dataset_dir,
-                                       use_mode=None if dataset_dir is None else 'Validation')
+    database_config = BaseDatabaseConfig(existing_dir=dataset_dir,
+                                         shuffle=True,
+                                         normalize=True,
+                                         mode=None if dataset_dir is None else 'validation')
 
     # Define trained network session
     dpx_session = 'beam_dpx'
@@ -56,12 +55,12 @@ def create_runner(dataset_dir):
     session_name = user_session if os.path.exists('sessions/' + user_session) else dpx_session
 
     # Runner
-    return SofaRunner(session_dir='sessions',
-                      session_name=session_name,
-                      dataset_config=dataset_config,
-                      environment_config=env_config,
-                      network_config=net_config,
-                      nb_steps=500)
+    return SofaPrediction(environment_config=environment_config,
+                          network_config=network_config,
+                          database_config=database_config,
+                          session_dir='sessions',
+                          session_name=session_name,
+                          nb_steps=500)
 
 
 if __name__ == '__main__':

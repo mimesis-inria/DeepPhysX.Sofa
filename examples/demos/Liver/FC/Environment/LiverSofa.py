@@ -25,22 +25,14 @@ from parameters import np, p_model, p_grid, p_forces
 class LiverSofa(SofaEnvironment):
 
     def __init__(self,
-                 root_node,
-                 ip_address='localhost',
-                 port=10000,
-                 instance_id=0,
-                 number_of_instances=1,
                  as_tcp_ip_client=True,
-                 environment_manager=None):
+                 instance_id=1,
+                 instance_nb=1):
 
         SofaEnvironment.__init__(self,
-                                 root_node=root_node,
-                                 ip_address=ip_address,
-                                 port=port,
-                                 instance_id=instance_id,
-                                 number_of_instances=number_of_instances,
                                  as_tcp_ip_client=as_tcp_ip_client,
-                                 environment_manager=environment_manager)
+                                 instance_id=instance_id,
+                                 instance_nb=instance_nb)
 
         # With flag set to True, the model is created
         self.create_model = {'fem': True, 'nn': False}

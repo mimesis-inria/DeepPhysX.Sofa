@@ -4,7 +4,7 @@ DummyEnvironment: SOFA compatible version
 """
 
 # Python related imports
-from numpy import array
+from numpy import array, ndarray
 
 # DeepPhysX related imports
 from DeepPhysX.Sofa.Environment.SofaEnvironment import SofaEnvironment
@@ -14,25 +14,16 @@ from DeepPhysX.Sofa.Environment.SofaEnvironment import SofaEnvironment
 class DummyEnvironment(SofaEnvironment):
 
     def __init__(self,
-                 root_node,
-                 ip_address='localhost',
-                 port=10000,
-                 instance_id=1,
-                 number_of_instances=1,
                  as_tcp_ip_client=True,
-                 environment_manager=None):
+                 instance_id=1,
+                 instance_nb=1):
 
         SofaEnvironment.__init__(self,
-                                 root_node=root_node,
-                                 ip_address=ip_address,
-                                 port=port,
-                                 instance_id=instance_id,
-                                 number_of_instances=number_of_instances,
                                  as_tcp_ip_client=as_tcp_ip_client,
-                                 environment_manager=environment_manager)
+                                 instance_id=instance_id,
+                                 instance_nb=instance_nb)
 
-        self.nb_step = 0
-        self.increment = 0
+        self.step_nb = 0
 
     """
     INITIALIZING ENVIRONMENT - Methods will be automatically called it this order:
@@ -43,11 +34,6 @@ class DummyEnvironment(SofaEnvironment):
        - send_parameters: Same as recv_parameters, Environment can send back a set of parameters if required
        - send_visualization: Send initial visualization data (see Example/CORE/Features to add visualization data)
     """
-
-    # Optional
-    def recv_parameters(self, param_dict):
-        # Set data size
-        self.increment = param_dict['increment'] if 'increment' in param_dict else 1
 
     # MANDATORY
     def create(self):
@@ -62,15 +48,15 @@ class DummyEnvironment(SofaEnvironment):
         # Nothing to compute after init
         pass
 
-    # Optional
-    def send_parameters(self):
-        # Nothing to send back
-        return {}
+    # MANDATORY
+    def init_database(self):
+        # Define the fields of the training Database
+        self.define_training_fields(fields=[('input', ndarray), ('ground_truth', ndarray)])
 
     # Optional
-    def send_visualization(self):
-        # Nothing to visualize (see Example/CORE/Features to add visualization data)
-        return {}
+    def init_visualization(self):
+        # Nothing to visualize
+        pass
 
     """
     ENVIRONMENT BEHAVIOR - Methods will be automatically called at each simulation step in this order:
@@ -94,9 +80,9 @@ class DummyEnvironment(SofaEnvironment):
     # Optional
     def onAnimateEndEvent(self, event):
         # Generally compute training data according to the time step
-        self.set_training_data(input_array=array([self.nb_step]),
-                               output_array=array([self.nb_step]))
-        self.nb_step += self.increment
+        self.step_nb += 1
+        self.set_training_data(input=array([self.step_nb]),
+                               ground_truth=array([self.step_nb]))
         # Other data fields can be filled:
         #   - set_loss_data: Define an additional data to compute loss value (see Optimization.transform_loss)
         #   - set_additional_dataset: Add a field to the dataset
@@ -119,7 +105,7 @@ class DummyEnvironment(SofaEnvironment):
     # Optional
     def apply_prediction(self, prediction):
         # Nothing to apply in our DummyEnvironment
-        print(f"Prediction at step {self.nb_step - self.increment} = {prediction}")
+        print(f"Prediction at step {self.step_nb} = {prediction['prediction']}")
 
     # Optional
     def close(self):

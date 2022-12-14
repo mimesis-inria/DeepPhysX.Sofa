@@ -12,58 +12,55 @@ Training data are produced at each time step :
 # Python related imports
 import os
 import sys
+from numpy import ndarray, zeros, double, subtract, reshape
+from numpy.linalg import norm
 
 # Session related imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from LiverSofa import LiverSofa, np
+from LiverSofa import LiverSofa
 
 
 class LiverTraining(LiverSofa):
 
     def __init__(self,
-                 root_node,
-                 ip_address='localhost',
-                 port=10000,
-                 instance_id=0,
-                 number_of_instances=1,
                  as_tcp_ip_client=True,
-                 environment_manager=None):
+                 instance_id=1,
+                 instance_nb=1):
+
         LiverSofa.__init__(self,
-                           root_node=root_node,
-                           ip_address=ip_address,
-                           port=port,
-                           instance_id=instance_id,
-                           number_of_instances=number_of_instances,
                            as_tcp_ip_client=as_tcp_ip_client,
-                           environment_manager=environment_manager)
+                           instance_id=instance_id,
+                           instance_nb=instance_nb)
 
         self.create_model['nn'] = True
 
-    def send_visualization(self):
+    def init_database(self):
+        """
+        Define the fields of the training dataset.
+        """
+
+        # Define the fields of the Training database
+        self.define_training_fields(fields=[('input', ndarray), ('ground_truth', ndarray)])
+
+    def init_visualization(self):
         """
         Define and send the initial visualization data dictionary. Automatically called when creating Environment.
         """
 
         # Add the mesh model (object will have id = 0)
-        self.factory.add_object(object_type='Mesh', data_dict={'positions': self.f_visu.position.value.copy(),
-                                                               'cells': self.f_visu.triangles.value.copy(),
-                                                               'at': self.instance_id,
-                                                               'c': 'green'})
-        # Return the initial visualization data
-        return self.factory.objects_dict
+        self.factory.add_mesh(positions=self.f_visu.position.value.copy(),
+                              cells=self.f_visu.triangles.value.copy(),
+                              at=self.instance_id,
+                              c='green')
 
     def onAnimateEndEvent(self, event):
         """
         Called within the Sofa pipeline at the end of the time step. Compute training data and apply prediction.
         """
 
-        # Compute training data
-        input_array = self.compute_input()
-        output_array = self.compute_output()
-
         # Send training data
-        self.set_training_data(input_array=input_array,
-                               output_array=output_array)
+        self.set_training_data(input=self.compute_input(),
+                               ground_truth=self.compute_output())
 
         # Update visualization
         self.update_visual()
@@ -74,7 +71,7 @@ class LiverTraining(LiverSofa):
         """
 
         # Init encoded forces field to zero
-        F = np.zeros(self.data_size, dtype=np.double)
+        F = zeros(self.data_size, dtype=double)
         # Encode each force field
         surface_mo = self.f_surface_mo if self.create_model['fem'] else self.n_surface_mo
         for force_field in self.force_field:
@@ -84,7 +81,7 @@ class LiverTraining(LiverSofa):
                 cell = self.regular_grid.cell_index_containing(p)
                 # For each node of the cell, encode the force value
                 for node in self.regular_grid.node_indices_of(cell):
-                    if node < self.nb_nodes_regular_grid and np.linalg.norm(F[node]) == 0.:
+                    if node < self.nb_nodes_regular_grid and norm(F[node]) == 0.:
                         F[node] = force_field.force.value
         return F
 
@@ -94,9 +91,9 @@ class LiverTraining(LiverSofa):
         """
 
         # Write the position of each point from the sparse grid to the regular grid
-        actual_positions_on_regular_grid = np.zeros(self.data_size, dtype=np.double)
+        actual_positions_on_regular_grid = zeros(self.data_size, dtype=double)
         actual_positions_on_regular_grid[self.idx_sparse_to_regular] = self.f_sparse_grid_mo.position.array()
-        return np.subtract(actual_positions_on_regular_grid, self.regular_grid_rest_shape)
+        return subtract(actual_positions_on_regular_grid, self.regular_grid_rest_shape)
 
     def apply_prediction(self, prediction):
         """
@@ -104,7 +101,7 @@ class LiverTraining(LiverSofa):
         """
 
         # Reshape to correspond regular grid, transform to sparse grid
-        U = np.reshape(prediction, self.data_size)
+        U = reshape(prediction['prediction'], self.data_size)
         U_sparse = U[self.idx_sparse_to_regular]
         self.n_sparse_grid_mo.position.value = self.n_sparse_grid_mo.rest_position.array() + U_sparse
 
@@ -114,6 +111,6 @@ class LiverTraining(LiverSofa):
         """
 
         # Update mesh position
-        self.factory.update_object_dict(object_id=0, new_data_dict={'position': self.f_visu.position.value.copy()})
-        # Send updated data
-        self.update_visualisation(visu_dict=self.factory.updated_object_dict)
+        self.factory.update_mesh(object_id=0,
+                                 positions=self.f_visu.position.value.copy())
+        self.update_visualisation()

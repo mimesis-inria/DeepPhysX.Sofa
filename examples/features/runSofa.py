@@ -11,26 +11,29 @@ import os
 import Sofa.Gui
 
 # DeepPhysX related imports
-from DeepPhysX.Core.Manager.EnvironmentManager import EnvironmentManager
 from DeepPhysX.Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
 
 # Working session imports
-from Environment.EnvironmentSofa import MeanEnvironmentSofa
+from Environment.EnvironmentSofa import EnvironmentSofa
 
 
 def create_environment():
-    # Define the number of points and the dimension
-    data_size = [30, 3]
-    # Create SofaEnvironment configuration
-    environment_config = SofaEnvironmentConfig(environment_class=MeanEnvironmentSofa,
-                                               as_tcp_ip_client=False,
-                                               param_dict={'constant': False,
-                                                           'data_size': data_size,
-                                                           'sleep': False})
 
-    # Create Armadillo Environment within EnvironmentManager
-    environment_manager = EnvironmentManager(environment_config=environment_config)
-    return environment_manager.environment
+    # Define the number of points and the dimension
+    nb_points = 30
+    dimension = 3
+
+    # Create SofaEnvironment configuration
+    env_config = SofaEnvironmentConfig(environment_class=EnvironmentSofa,
+                                       env_kwargs={'constant': False,
+                                                   'data_size': [nb_points, dimension],
+                                                   'delay': False})
+
+    # Create Environment
+    env = env_config.create_environment()
+    env.create()
+    env.init()
+    return env
 
 
 if __name__ == '__main__':

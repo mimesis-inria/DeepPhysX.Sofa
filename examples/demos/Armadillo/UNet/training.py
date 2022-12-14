@@ -11,14 +11,15 @@ import sys
 import torch
 
 # DeepPhysX related imports
-from DeepPhysX.Core.Dataset.BaseDatasetConfig import BaseDatasetConfig
-from DeepPhysX.Core.Visualizer.VedoVisualizer import VedoVisualizer
-from DeepPhysX.Core.Pipelines.BaseTrainer import BaseTrainer
+from DeepPhysX.Core.Pipelines.BaseTraining import BaseTraining
+from DeepPhysX.Core.Database.BaseDatabaseConfig import BaseDatabaseConfig
+from DeepPhysX.Core.Visualization.VedoVisualizer import VedoVisualizer
 from DeepPhysX.Torch.UNet.UNetConfig import UNetConfig
 from DeepPhysX.Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
 
 # Working session imports
 from download import ArmadilloDownloader
+
 ArmadilloDownloader().get_session('run')
 from Environment.ArmadilloTraining import ArmadilloTraining
 from Environment.parameters import grid_resolution
@@ -31,41 +32,41 @@ lr = 1e-5
 
 
 def launch_trainer(dataset_dir, nb_env):
+
     # Environment config
-    env_config = SofaEnvironmentConfig(environment_class=ArmadilloTraining,
-                                       visualizer=VedoVisualizer,
-                                       number_of_thread=nb_env)
+    environment_config = SofaEnvironmentConfig(environment_class=ArmadilloTraining,
+                                               visualizer=VedoVisualizer,
+                                               number_of_thread=nb_env)
 
     # UNet config
-    net_config = UNetConfig(network_name='armadillo_UNet',
-                            loss=torch.nn.MSELoss,
-                            lr=lr,
-                            optimizer=torch.optim.Adam,
-                            input_size=grid_resolution,
-                            nb_dims=3,
-                            nb_input_channels=3,
-                            nb_first_layer_channels=128,
-                            nb_output_channels=3,
-                            nb_steps=3,
-                            two_sublayers=True,
-                            border_mode='same',
-                            skip_merge=False,)
+    network_config = UNetConfig(lr=lr,
+                                loss=torch.nn.MSELoss,
+                                optimizer=torch.optim.Adam,
+                                input_size=grid_resolution,
+                                nb_dims=3,
+                                nb_input_channels=3,
+                                nb_first_layer_channels=128,
+                                nb_output_channels=3,
+                                nb_steps=3,
+                                two_sublayers=True,
+                                border_mode='same',
+                                skip_merge=False, )
 
     # Dataset config
-    dataset_config = BaseDatasetConfig(partition_size=1,
-                                       shuffle_dataset=True,
-                                       normalize=True,
-                                       dataset_dir=dataset_dir)
+    database_config = BaseDatabaseConfig(existing_dir=dataset_dir,
+                                         max_file_size=1,
+                                         shuffle=True,
+                                         normalize=True)
 
     # Trainer
-    trainer = BaseTrainer(session_dir='sessions',
-                          session_name='armadillo_training_user',
-                          dataset_config=dataset_config,
-                          environment_config=env_config,
-                          network_config=net_config,
-                          nb_epochs=nb_epochs,
-                          nb_batches=nb_batch,
-                          batch_size=batch_size)
+    trainer = BaseTraining(network_config=network_config,
+                           database_config=database_config,
+                           environment_config=environment_config if dataset_dir is None else None,
+                           session_dir='sessions',
+                           session_name='armadillo_training_user',
+                           epoch_nb=nb_epochs,
+                           batch_nb=nb_batch,
+                           batch_size=batch_size)
 
     # Launch the training session
     trainer.execute()

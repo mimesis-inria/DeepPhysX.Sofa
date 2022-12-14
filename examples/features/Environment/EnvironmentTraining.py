@@ -13,59 +13,54 @@ from numpy import array
 
 # Session related imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from EnvironmentSofa import MeanEnvironmentSofa
+from EnvironmentDataset import EnvironmentDataset
 
 
 # Create an Environment as a BaseEnvironment child class
-class MeanEnvironmentTraining(MeanEnvironmentSofa):
+class EnvironmentTraining(EnvironmentDataset):
 
     def __init__(self,
-                 root_node,
-                 ip_address='localhost',
-                 port=10000,
-                 instance_id=0,
-                 number_of_instances=1,
                  as_tcp_ip_client=True,
-                 environment_manager=None):
-
-        MeanEnvironmentSofa.__init__(self,
-                                     root_node=root_node,
-                                     ip_address=ip_address,
-                                     port=port,
-                                     instance_id=instance_id,
-                                     number_of_instances=number_of_instances,
-                                     as_tcp_ip_client=as_tcp_ip_client,
-                                     environment_manager=environment_manager)
+                 instance_id=1,
+                 instance_nb=1,
+                 constant=False,
+                 data_size=(30, 3),
+                 delay=False):
+        EnvironmentDataset.__init__(self,
+                                    as_tcp_ip_client=as_tcp_ip_client,
+                                    instance_id=instance_id,
+                                    instance_nb=instance_nb,
+                                    constant=constant,
+                                    data_size=data_size,
+                                    delay=delay)
 
     """
     ENVIRONMENT INITIALIZATION
     Methods will be automatically called in this order to create and initialize Environment.
-        - recv_parameters
         - create
-        - send_visualization
+        - init_database
+        - init_visualization
     """
 
-    def send_visualization(self):
+    def init_visualization(self):
+
         # Point cloud (object will have id = 0)
-        self.factory.add_object(object_type="Points",
-                                data_dict={"positions": self.MO['input'].position.value,
-                                           "c": "blue",
-                                           "at": self.instance_id,
-                                           "r": 5})
+        self.factory.add_points(positions=self.MO['input'].position.value,
+                                at=self.instance_id,
+                                c='blue',
+                                point_size=5)
+
         # Ground truth value (object will have id = 1)
-        self.factory.add_object(object_type="Points",
-                                data_dict={"positions": self.MO['output'].position.value,
-                                           "c": "green",
-                                           "at": self.instance_id,
-                                           "r": 10})
+        self.factory.add_points(positions=self.MO['ground_truth'].position.value,
+                                at=self.instance_id,
+                                c='green',
+                                point_size=10)
+
         # Prediction value (object will have id = 2)
-        self.factory.add_object(object_type="Points",
-                                data_dict={"positions": self.MO['predict'].position.value,
-                                           "c": "pink",
-                                           "at": self.instance_id,
-                                           "r": 10})
-        # Return the visualization data
-        return self.factory.objects_dict
+        self.factory.add_points(positions=self.MO['prediction'].position.value,
+                                at=self.instance_id,
+                                c='pink',
+                                point_size=10)
 
     """
     ENVIRONMENT BEHAVIOR
@@ -77,21 +72,23 @@ class MeanEnvironmentTraining(MeanEnvironmentSofa):
         - apply_prediction
     """
 
-    async def on_step(self):
-        # Request a prediction for the given input
-        prediction = self.get_prediction(input_array=self.input)
-        # Apply this prediction in Environment
-        self.apply_prediction(prediction)
+    def onAnimateEndEvent(self, _):
+
+        # Request and apply a prediction in the Environment
+        self.apply_prediction(self.get_prediction(input=self.MO['input'].position.value))
 
     def apply_prediction(self, prediction):
+
         # Update MechanicalObject
-        self.MO['predict'].position.value = array([prediction])
+        center = prediction['prediction']
+        self.MO['prediction'].position.value = center
+
         # Update visualization with new input, ground truth and prediction
-        self.factory.update_object_dict(object_id=0,
-                                        new_data_dict={'positions': self.MO['input'].position.value})
-        self.factory.update_object_dict(object_id=1,
-                                        new_data_dict={'positions': self.MO['output'].position.value})
-        self.factory.update_object_dict(object_id=2,
-                                        new_data_dict={'positions': self.MO['predict'].position.value})
-        # Send visualization data to update
-        self.update_visualisation(visu_dict=self.factory.updated_object_dict)
+        if self.factory is not None:
+            self.factory.update_points(object_id=0,
+                                       positions=self.MO['input'].position.value)
+            self.factory.update_points(object_id=1,
+                                       positions=self.MO['ground_truth'].position.value)
+            self.factory.update_points(object_id=2,
+                                       positions=self.MO['prediction'].position.value)
+            self.update_visualisation()

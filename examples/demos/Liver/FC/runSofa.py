@@ -10,7 +10,6 @@ import os
 import Sofa.Gui
 
 # DeepPhysX related imports
-from DeepPhysX.Core.Manager.EnvironmentManager import EnvironmentManager
 from DeepPhysX.Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
 
 # Working session imports
@@ -22,12 +21,13 @@ from Environment.LiverSofa import LiverSofa
 def create_environment():
 
     # Create SofaEnvironment configuration
-    environment_config = SofaEnvironmentConfig(environment_class=LiverSofa,
-                                               as_tcp_ip_client=False)
+    env_config = SofaEnvironmentConfig(environment_class=LiverSofa)
 
-    # Create Liver Environment within EnvironmentManager
-    environment_manager = EnvironmentManager(environment_config=environment_config)
-    return environment_manager.environment
+    # Create Armadillo Environment
+    env = env_config.create_environment()
+    env.create()
+    env.init()
+    return env
 
 
 if __name__ == '__main__':

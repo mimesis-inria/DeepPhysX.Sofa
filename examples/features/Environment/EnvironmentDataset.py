@@ -9,56 +9,58 @@ Initialize and update visualization data.
 # Python related imports
 import os
 import sys
+from numpy import ndarray
 
 # Session related imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from EnvironmentSofa import MeanEnvironmentSofa
+from EnvironmentSofa import EnvironmentSofa
 
 
 # Create an Environment as a BaseEnvironment child class
-class MeanEnvironmentDataset(MeanEnvironmentSofa):
+class EnvironmentDataset(EnvironmentSofa):
 
     def __init__(self,
-                 root_node,
-                 ip_address='localhost',
-                 port=10000,
-                 instance_id=0,
-                 number_of_instances=1,
                  as_tcp_ip_client=True,
-                 environment_manager=None):
+                 instance_id=1,
+                 instance_nb=1,
+                 constant=False,
+                 data_size=(30, 3),
+                 delay=False):
 
-        MeanEnvironmentSofa.__init__(self,
-                                     root_node=root_node,
-                                     ip_address=ip_address,
-                                     port=port,
-                                     instance_id=instance_id,
-                                     number_of_instances=number_of_instances,
-                                     as_tcp_ip_client=as_tcp_ip_client,
-                                     environment_manager=environment_manager)
+        EnvironmentSofa.__init__(self,
+                                 as_tcp_ip_client=as_tcp_ip_client,
+                                 instance_id=instance_id,
+                                 instance_nb=instance_nb,
+                                 constant=constant,
+                                 data_size=data_size,
+                                 delay=delay)
 
     """
     ENVIRONMENT INITIALIZATION
     Methods will be automatically called in this order to create and initialize Environment.
-        - recv_parameters
         - create
-        - send_visualization
+        - init_database
+        - init_visualization
     """
 
-    def send_visualization(self):
+    def init_database(self):
+
+        # Define the fields of the Training database
+        self.define_training_fields(fields=[('input', ndarray), ('ground_truth', ndarray)])
+
+    def init_visualization(self):
+
         # Point cloud (object will have id = 0)
-        self.factory.add_object(object_type="Points",
-                                data_dict={"positions": self.MO['input'].position.value,
-                                           "c": "blue",
-                                           "at": self.instance_id,
-                                           "r": 5})
+        self.factory.add_points(positions=self.MO['input'].position.value,
+                                at=self.instance_id,
+                                c='blue',
+                                point_size=5)
+
         # Ground truth value (object will have id = 1)
-        self.factory.add_object(object_type="Points",
-                                data_dict={"positions": self.MO['output'].position.value,
-                                           "c": "green",
-                                           "at": self.instance_id,
-                                           "r": 10})
-        # Return the visualization data
-        return self.factory.objects_dict
+        self.factory.add_points(positions=self.MO['ground_truth'].position.value,
+                                at=self.instance_id,
+                                c='green',
+                                point_size=10)
 
     """
     ENVIRONMENT BEHAVIOR
@@ -69,11 +71,17 @@ class MeanEnvironmentDataset(MeanEnvironmentSofa):
         - on_step
     """
 
-    async def on_step(self):
-        # Update visualization with new input and ground truth
-        self.factory.update_object_dict(object_id=0,
-                                        new_data_dict={'positions': self.MO['input'].position.value})
-        self.factory.update_object_dict(object_id=1,
-                                        new_data_dict={'positions': self.MO['output'].position.value})
-        # Send visualization data to update
-        self.update_visualisation(visu_dict=self.factory.updated_object_dict)
+    def onAnimateBeginEvent(self, _):
+
+        EnvironmentSofa.onAnimateBeginEvent(self, _)
+        self.set_training_data(input=self.MO['input'].position.value,
+                               ground_truth=self.MO['ground_truth'].position.value)
+
+    def onAnimateEndEvent(self, _):
+
+        if self.factory is not None:
+            self.factory.update_points(object_id=0,
+                                       positions=self.MO['input'].position.value)
+            self.factory.update_points(object_id=1,
+                                       positions=self.MO['ground_truth'].position.value)
+            self.update_visualisation()
