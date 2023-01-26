@@ -14,7 +14,6 @@ import Sofa.Gui
 
 # DeepPhysX related imports
 from DeepPhysX.Core.Database.BaseDatabaseConfig import BaseDatabaseConfig
-from DeepPhysX.Core.Visualization.VedoVisualizer import VedoVisualizer
 from DeepPhysX.Core.Pipelines.BasePrediction import BasePrediction
 from DeepPhysX.Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
 from DeepPhysX.Sofa.Pipeline.SofaPrediction import SofaPrediction
@@ -29,7 +28,7 @@ def create_runner(visualizer=False):
 
     # Environment config
     environment_config = SofaEnvironmentConfig(environment_class=BeamPrediction,
-                                               visualizer=VedoVisualizer if visualizer else None,
+                                               visualizer='vedo' if visualizer else None,
                                                env_kwargs={'visualizer': visualizer})
 
     # FC config

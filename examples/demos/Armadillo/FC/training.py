@@ -15,7 +15,6 @@ from numpy import multiply
 # DeepPhysX related imports
 from DeepPhysX.Core.Pipelines.BaseTraining import BaseTraining
 from DeepPhysX.Core.Database.BaseDatabaseConfig import BaseDatabaseConfig
-from DeepPhysX.Core.Visualization.VedoVisualizer import VedoVisualizer
 from DeepPhysX.Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
 from DeepPhysX.Torch.FC.FCConfig import FCConfig
 
@@ -36,7 +35,7 @@ def launch_trainer(dataset_dir, nb_env):
 
     # Environment config
     environment_config = SofaEnvironmentConfig(environment_class=ArmadilloTraining,
-                                               visualizer=VedoVisualizer,
+                                               visualizer='vedo',
                                                number_of_thread=nb_env)
 
     # Get the data size

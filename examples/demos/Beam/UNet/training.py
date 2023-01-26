@@ -14,7 +14,6 @@ from torch.nn import MSELoss
 # DeepPhysX related imports
 from DeepPhysX.Core.Pipelines.BaseTraining import BaseTraining
 from DeepPhysX.Core.Database.BaseDatabaseConfig import BaseDatabaseConfig
-from DeepPhysX.Core.Visualization.VedoVisualizer import VedoVisualizer
 from DeepPhysX.Torch.UNet.UNetConfig import UNetConfig
 from DeepPhysX.Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
 
@@ -34,7 +33,7 @@ def launch_trainer(dataset_dir, nb_env):
 
     # Environment config
     environment_config = SofaEnvironmentConfig(environment_class=BeamTraining,
-                                               visualizer=VedoVisualizer,
+                                               visualizer='vedo',
                                                number_of_thread=nb_env)
 
     # UNet config

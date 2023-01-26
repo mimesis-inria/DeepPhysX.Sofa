@@ -1,7 +1,9 @@
-from typing import Dict, Any
+from typing import Dict, Any, Union, Tuple
 from numpy import ndarray
 
-from DeepPhysX.Core.Environment.BaseEnvironment import BaseEnvironment, Database
+from SSD.SOFA.Rendering.UserAPI import UserAPI, Database
+
+from DeepPhysX.Core.Environment.BaseEnvironment import BaseEnvironment
 
 import Sofa
 import Sofa.Simulation
@@ -165,3 +167,23 @@ class SofaEnvironment(Sofa.Core.Controller, BaseEnvironment):
 
         description = BaseEnvironment.__str__(self)
         return description
+
+    def _create_visualization(self,
+                              visualization_db: Union[Database, Tuple[str, str]],
+                              produce_data: bool = True) -> None:
+        """
+        Create a Factory for the Environment.
+        """
+
+        if type(visualization_db) == list:
+            self.factory = UserAPI(root=self.root,
+                                   database_dir=visualization_db[0],
+                                   database_name=visualization_db[1],
+                                   idx_instance=self.instance_id,
+                                   non_storing=not produce_data)
+        else:
+            self.factory = UserAPI(root=self.root,
+                                   database=visualization_db,
+                                   idx_instance=self.instance_id,
+                                   non_storing=not produce_data)
+        self.init_visualization()

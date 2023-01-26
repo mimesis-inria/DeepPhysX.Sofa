@@ -5,7 +5,6 @@ from subprocess import run
 
 from DeepPhysX.Core.Environment.BaseEnvironmentConfig import BaseEnvironmentConfig
 from DeepPhysX.Sofa.Environment.SofaEnvironment import SofaEnvironment
-from DeepPhysX.Core.Visualization.VedoVisualizer import VedoVisualizer
 
 
 class SofaEnvironmentConfig(BaseEnvironmentConfig):
@@ -21,7 +20,7 @@ class SofaEnvironmentConfig(BaseEnvironmentConfig):
                  load_samples: bool = False,
                  only_first_epoch: bool = True,
                  always_produce: bool = False,
-                 visualizer: Optional[Type[VedoVisualizer]] = None,
+                 visualizer: Optional[str] = None,
                  record_wrong_samples: bool = False,
                  env_kwargs: Optional[Dict[Any, Any]] = None):
         """
@@ -39,7 +38,7 @@ class SofaEnvironmentConfig(BaseEnvironmentConfig):
         :param only_first_epoch: If True, data will always be created from environment. If False, data will be created
                                  from the environment during the first epoch and then re-used from the Dataset.
         :param always_produce: If True, data will always be produced in Environment(s).
-        :param visualizer: Class of the Visualizer to use.
+        :param visualizer: Backend of the Visualizer to use.
         :param record_wrong_samples: If True, wrong samples are recorded through Visualizer.
         :param env_kwargs: Additional arguments to pass to the Environment.
         """

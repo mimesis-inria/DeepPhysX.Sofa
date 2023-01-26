@@ -12,7 +12,6 @@ import sys
 # DeepPhysX related imports
 from DeepPhysX.Core.Pipelines.BaseDataGeneration import BaseDataGeneration
 from DeepPhysX.Core.Database.BaseDatabaseConfig import BaseDatabaseConfig
-from DeepPhysX.Core.Visualization.VedoVisualizer import VedoVisualizer
 from DeepPhysX.Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
 
 # Session related imports
@@ -27,7 +26,7 @@ def launch_data_generation(dataset_dir, dataset_mode):
 
     # Environment configuration
     environment_config = SofaEnvironmentConfig(environment_class=BeamTraining,
-                                               visualizer=VedoVisualizer,
+                                               visualizer='vedo',
                                                as_tcp_ip_client=True,
                                                number_of_thread=4)
 

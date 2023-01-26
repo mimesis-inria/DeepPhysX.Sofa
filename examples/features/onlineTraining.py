@@ -10,7 +10,6 @@ from torch.optim import Adam
 # DeepPhysX related imports
 from DeepPhysX.Core.Pipelines.BaseTraining import BaseTraining
 from DeepPhysX.Core.Database.BaseDatabaseConfig import BaseDatabaseConfig
-from DeepPhysX.Core.Visualization.VedoVisualizer import VedoVisualizer
 from DeepPhysX.Sofa.Environment.SofaEnvironmentConfig import SofaEnvironmentConfig
 from DeepPhysX.Torch.FC.FCConfig import FCConfig
 
@@ -26,7 +25,7 @@ def launch_training():
 
     # Environment configuration
     environment_config = SofaEnvironmentConfig(environment_class=EnvironmentTraining,
-                                               visualizer=VedoVisualizer,
+                                               visualizer='vedo',
                                                as_tcp_ip_client=True,
                                                number_of_thread=4,
                                                env_kwargs={'constant': False,
