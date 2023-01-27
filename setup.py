@@ -24,7 +24,7 @@ with open('README.md') as f:
 
 # Installation
 setup(name=f'{PROJECT}.{PACKAGE}',
-      version='22.12',
+      version='22.12.1',
       description='A SOFA compatibility layer for DeepPhysX framework.',
       long_description=long_description,
       long_description_content_type='text/markdown',
