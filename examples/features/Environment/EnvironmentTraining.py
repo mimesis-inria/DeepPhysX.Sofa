@@ -45,19 +45,19 @@ class EnvironmentTraining(EnvironmentDataset):
     def init_visualization(self):
 
         # Point cloud (object will have id = 0)
-        self.factory.add_points(positions=self.MO['input'].position.value,
+        self.factory.add_points(position_object='@input.MO',
                                 at=self.instance_id,
                                 c='blue',
                                 point_size=5)
 
         # Ground truth value (object will have id = 1)
-        self.factory.add_points(positions=self.MO['ground_truth'].position.value,
+        self.factory.add_points(position_object='@output.MO',
                                 at=self.instance_id,
                                 c='green',
                                 point_size=10)
 
         # Prediction value (object will have id = 2)
-        self.factory.add_points(positions=self.MO['prediction'].position.value,
+        self.factory.add_points(position_object='@predict.MO',
                                 at=self.instance_id,
                                 c='pink',
                                 point_size=10)
@@ -82,13 +82,3 @@ class EnvironmentTraining(EnvironmentDataset):
         # Update MechanicalObject
         center = prediction['prediction']
         self.MO['prediction'].position.value = center
-
-        # Update visualization with new input, ground truth and prediction
-        if self.factory is not None:
-            self.factory.update_points(object_id=0,
-                                       positions=self.MO['input'].position.value)
-            self.factory.update_points(object_id=1,
-                                       positions=self.MO['ground_truth'].position.value)
-            self.factory.update_points(object_id=2,
-                                       positions=self.MO['prediction'].position.value)
-            self.update_visualisation()

@@ -51,17 +51,11 @@ class LiverPrediction(LiverTraining):
         # Nothing to visualize if the predictions are run in SOFA GUI.
         if self.visualizer:
             # Add the mesh model (object will have id = 0)
-            self.factory.add_mesh(positions=self.n_visu.position.value.copy(),
-                                  cells=self.n_visu.triangles.value.copy(),
+            self.factory.add_mesh(position_object='@nn.visual.OGL',
                                   at=self.instance_id,
                                   c='orange')
-            # Arrows representing the force fields (object will have id = 1)
-            self.factory.add_arrows(positions=p_liver.fixed_point,
-                                    vectors=np.array([0., 0., 0.]),
-                                    c='green',
-                                    at=self.instance_id)
-            # Point cloud for sparse grid (object will have id = 2)
-            self.factory.add_points(positions=self.n_sparse_grid_mo.position.value,
+            # Point cloud for sparse grid (object will have id = 1)
+            self.factory.add_points(position_object='@nn.SparseGrid',
                                     point_size=2,
                                     c='grey',
                                     at=self.instance_id)
@@ -137,35 +131,3 @@ class LiverPrediction(LiverTraining):
 
         # See the network prediction even if the solver diverged.
         return True
-
-    def apply_prediction(self, prediction):
-        """
-        Apply the predicted displacement to the NN model.
-        """
-
-        LiverTraining.apply_prediction(self, prediction)
-        # Update visualization if required
-        if self.visualizer:
-            self.update_visual()
-
-    def update_visual(self):
-        """
-        Update the visualization data dict.
-        """
-
-        # Update mesh positions
-        self.factory.update_mesh(object_id=0,
-                                 positions=self.n_visu.position.value.copy())
-        # Update force fields
-        position, vector = [], []
-        for cff in self.force_field:
-            position += list(self.n_surface_mo.position.value[cff.indices.value])
-            vector += list(cff.forces.value)
-        self.factory.update_arrows(object_id=1,
-                                   positions=np.array(position),
-                                   vectors=np.array(vector))
-        # Update sparse grid positions
-        self.factory.update_points(object_id=2,
-                                   positions=self.n_sparse_grid_mo.position.value)
-        # Send updated data
-        self.update_visualisation()

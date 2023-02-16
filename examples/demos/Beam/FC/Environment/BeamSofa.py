@@ -120,7 +120,7 @@ class BeamSofa(SofaEnvironment):
 
         # Visual
         self.root.fem.addChild('visual')
-        self.f_visu = self.root.fem.visual.addObject('OglModel', src='@../GridTopo', color='green')
+        self.f_visu = self.root.fem.visual.addObject('OglModel', name='OGL', src='@../GridTopo', color='green')
         self.root.fem.visual.addObject('BarycentricMapping', input='@../GridMO', output='@./')
 
     def createNN(self):
@@ -163,7 +163,7 @@ class BeamSofa(SofaEnvironment):
 
         # Visual
         self.root.nn.addChild('visual')
-        self.n_visu = self.root.nn.visual.addObject('OglModel', src='@../GridTopo', color=(1, 0.6, 0.1, 1))
+        self.n_visu = self.root.nn.visual.addObject('OglModel', name='OGL', src='@../GridTopo', color=(1, 0.6, 0.1, 1))
         self.root.nn.visual.addObject('BarycentricMapping', input='@../GridMO', output='@./')
 
     def onSimulationInitDoneEvent(self, event):

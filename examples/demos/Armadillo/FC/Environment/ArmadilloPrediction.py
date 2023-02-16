@@ -50,15 +50,17 @@ class ArmadilloPrediction(ArmadilloTraining):
         # Nothing to visualize if the predictions are run in SOFA GUI.
         if self.visualizer:
             # Add the mesh model (object will have id = 0)
-            self.factory.add_mesh(positions=self.n_visu.position.value.copy(),
-                                  cells=self.n_visu.triangles.value.copy(),
+            self.factory.add_mesh(position_object='@nn.visual.OGL',
                                   at=self.instance_id,
                                   c='orange')
-            # Arrows representing the force fields (object will have id = 1)
-            self.factory.add_arrows(positions=np.array([0., 0., 0.]),
-                                    vectors=np.array([0., 0., 0.]),
-                                    c='green',
-                                    at=self.instance_id)
+            # Arrows representing the force fields (object will have id >= 1)
+            for i in range(len(self.cff)):
+                self.factory.add_arrows(position_object='@nn.surface.SurfaceMO',
+                                        start_indices=self.cff[i].indices.value,
+                                        vector_object=f'@nn.surface.cff_{p_forces.zones[i]}',
+                                        scale=0.25 / p_model.scale,
+                                        c='green',
+                                        at=self.instance_id)
 
     def onAnimateBeginEvent(self, event):
         """
@@ -94,28 +96,3 @@ class ArmadilloPrediction(ArmadilloTraining):
 
         # See the network prediction in every case.
         return True
-
-    def apply_prediction(self, prediction):
-        """
-        Apply the predicted displacement to the NN model. Automatically called by DeepPhysX.
-        """
-
-        ArmadilloTraining.apply_prediction(self, prediction)
-        # Update visualization if required
-        if self.visualizer:
-            self.update_visual()
-
-    def update_visual(self):
-        """
-        Update the visualization data dict.
-        """
-
-        # Update mesh positions
-        self.factory.update_mesh(object_id=0,
-                                 positions=self.n_visu.position.value.copy())
-        # Update force field
-        self.factory.update_arrows(object_id=1,
-                                   positions=self.n_surface_mo.position.value[self.cff[self.idx_zone].indices.value],
-                                   vectors=0.25 * self.cff[self.idx_zone].forces.value / p_model.scale)
-        # Send updated data
-        self.update_visualisation()

@@ -51,13 +51,13 @@ class EnvironmentDataset(EnvironmentSofa):
     def init_visualization(self):
 
         # Point cloud (object will have id = 0)
-        self.factory.add_points(positions=self.MO['input'].position.value,
+        self.factory.add_points(position_object='@input.MO',
                                 at=self.instance_id,
                                 c='blue',
                                 point_size=5)
 
         # Ground truth value (object will have id = 1)
-        self.factory.add_points(positions=self.MO['ground_truth'].position.value,
+        self.factory.add_points(position_object='@output.MO',
                                 at=self.instance_id,
                                 c='green',
                                 point_size=10)
@@ -76,12 +76,3 @@ class EnvironmentDataset(EnvironmentSofa):
         EnvironmentSofa.onAnimateBeginEvent(self, _)
         self.set_training_data(input=self.MO['input'].position.value,
                                ground_truth=self.MO['ground_truth'].position.value)
-
-    def onAnimateEndEvent(self, _):
-
-        if self.factory is not None:
-            self.factory.update_points(object_id=0,
-                                       positions=self.MO['input'].position.value)
-            self.factory.update_points(object_id=1,
-                                       positions=self.MO['ground_truth'].position.value)
-            self.update_visualisation()

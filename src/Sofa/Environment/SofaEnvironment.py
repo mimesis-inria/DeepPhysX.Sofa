@@ -158,7 +158,8 @@ class SofaEnvironment(Sofa.Core.Controller, BaseEnvironment):
         Triggers the Visualizer update.
         """
 
-        BaseEnvironment.update_visualisation(self)
+        # The Sofa UserAPI does automatic updates
+        pass
 
     def __str__(self):
         """
@@ -179,11 +180,11 @@ class SofaEnvironment(Sofa.Core.Controller, BaseEnvironment):
             self.factory = UserAPI(root=self.root,
                                    database_dir=visualization_db[0],
                                    database_name=visualization_db[1],
-                                   idx_instance=self.instance_id,
+                                   idx_instance=self.instance_id - 1,
                                    non_storing=not produce_data)
         else:
             self.factory = UserAPI(root=self.root,
                                    database=visualization_db,
-                                   idx_instance=self.instance_id,
+                                   idx_instance=self.instance_id - 1,
                                    non_storing=not produce_data)
         self.init_visualization()

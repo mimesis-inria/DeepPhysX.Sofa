@@ -49,8 +49,7 @@ class LiverTraining(LiverSofa):
         """
 
         # Add the mesh model (object will have id = 0)
-        self.factory.add_mesh(positions=self.f_visu.position.value.copy(),
-                              cells=self.f_visu.triangles.value.copy(),
+        self.factory.add_mesh(position_object='@fem.visual.OGL',
                               at=self.instance_id,
                               c='green')
 
@@ -71,9 +70,6 @@ class LiverTraining(LiverSofa):
         # Send training data
         self.set_training_data(input=self.compute_input(),
                                ground_truth=self.compute_output())
-
-        # Update visualization
-        self.update_visual()
 
     def compute_input(self):
         """
@@ -103,13 +99,3 @@ class LiverTraining(LiverSofa):
         # Reshape to correspond sparse grid
         U = reshape(prediction['prediction'], self.output_size)
         self.n_sparse_grid_mo.position.value = self.n_sparse_grid_mo.rest_position.array() + U
-
-    def update_visual(self):
-        """
-        Update the visualization data dict.
-        """
-
-        # Update mesh positions
-        self.factory.update_mesh(object_id=0,
-                                 positions=self.f_visu.position.value.copy())
-        self.update_visualisation()

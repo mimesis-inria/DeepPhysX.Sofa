@@ -142,7 +142,7 @@ class LiverSofa(SofaEnvironment):
 
         # Visual
         self.root.fem.addChild('visual')
-        self.f_visu = self.root.fem.visual.addObject('OglModel', src='@../../Mesh', color='green')
+        self.f_visu = self.root.fem.visual.addObject('OglModel', name='OGL', src='@../../Mesh', color='green')
         self.root.fem.visual.addObject('BarycentricMapping', input='@../SparseGridMO', output='@./')
 
     def createNN(self):
@@ -181,7 +181,7 @@ class LiverSofa(SofaEnvironment):
 
         # Visual
         self.root.nn.addChild('visual')
-        self.n_visu = self.root.nn.visual.addObject('OglModel', src='@../../Mesh', color=(1, 0.6, 0.1, 1))
+        self.n_visu = self.root.nn.visual.addObject('OglModel', name='OGL', src='@../../Mesh', color=(1, 0.6, 0.1, 1))
         self.root.nn.visual.addObject('BarycentricMapping', input='@../SparseGridMO', output='@./')
 
     def create_forces(self, node):
