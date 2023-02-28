@@ -37,9 +37,7 @@ class DummyEnvironment(SofaEnvironment):
 
     # MANDATORY
     def create(self):
-        # Add SOFA plugins
-        plugins = ['SofaComponentAll']
-        self.root.addObject('RequiredPlugin', pluginName=plugins)
+
         self.root.addChild('object')
         self.root.object.addObject('MechanicalObject', name='MO', position=[0., 0., 0.])
 

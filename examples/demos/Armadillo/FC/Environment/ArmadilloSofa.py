@@ -69,8 +69,8 @@ class ArmadilloSofa(SofaEnvironment):
 
         # Add required plugins
         SofaRuntime.PluginRepository.addFirstPath(os.environ['CARIBOU_INSTALL'])
-        plugins = ['SofaComponentAll', 'SofaLoader', 'SofaCaribou', 'SofaBaseTopology', 'SofaGeneralEngine',
-                   'SofaEngine', 'SofaOpenglVisual', 'SofaBoundaryCondition']
+        plugins = ['Sofa.Component.IO.Mesh', 'Sofa.Component.Engine.Select', 'Sofa.Component.MechanicalLoad',
+                   'Sofa.GL.Component.Rendering3D', 'SofaCaribou']
         self.root.addObject('RequiredPlugin', pluginName=plugins)
 
         # Scene visual style

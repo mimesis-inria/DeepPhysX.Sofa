@@ -53,9 +53,6 @@ class EnvironmentSofa(SofaEnvironment):
         pcd = pi * random(self.data_size)
         center = array([mean(pcd, axis=0)])
 
-        # Add SOFA plugins
-        plugins = ['SofaComponentAll']
-        self.root.addObject('RequiredPlugin', pluginName=plugins)
         # Add a MechanicalObject for the input data
         self.root.addChild('input')
         self.MO['input'] = self.root.input.addObject('MechanicalObject', name='MO', position=pcd.tolist(),
