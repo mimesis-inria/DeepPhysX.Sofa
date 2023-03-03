@@ -57,16 +57,16 @@ class BeamPrediction(BeamTraining):
         # Nothing to visualize if the predictions are run in SOFA GUI.
         if self.visualizer:
             # Add the mesh model (object will have id = 0)
-            self.factory.add_mesh(position_object='@nn.visual.OGL',
-                                  at=self.instance_id,
-                                  c='orange')
+            self.factory.add_mesh_callback(position_object='@nn.visual.OGL',
+                                           at=self.instance_id,
+                                           c='orange')
             # Arrows representing the force fields (object will have id = 1)
-            self.factory.add_arrows(position_object='@nn.visual.OGL',
-                                    start_indices=self.cff.indices.value,
-                                    vector_object='@nn.CFF',
-                                    scale=0.25,
-                                    c='green',
-                                    at=self.instance_id)
+            self.factory.add_arrows_callback(position_object='@nn.visual.OGL',
+                                             start_indices=self.cff.indices.value,
+                                             vector_object='@nn.CFF',
+                                             scale=0.25,
+                                             c='green',
+                                             at=self.instance_id)
 
     def onAnimateBeginEvent(self, event):
         """
@@ -79,7 +79,6 @@ class BeamPrediction(BeamTraining):
 
         # Create a new non-empty random box ROI, select nodes of the surface
         if self.idx_range == 0:
-
             # Define random box
             side = np.random.randint(0, 11)
             x_min = p_grid.min[0] if side in (3, 4) else np.random.randint(p_grid.min[0], p_grid.max[0] - 10)

@@ -25,7 +25,6 @@ class LiverTraining(LiverSofa):
                  as_tcp_ip_client=True,
                  instance_id=1,
                  instance_nb=1):
-
         LiverSofa.__init__(self,
                            as_tcp_ip_client=as_tcp_ip_client,
                            instance_id=instance_id,
@@ -49,9 +48,9 @@ class LiverTraining(LiverSofa):
         """
 
         # Add the mesh model (object will have id = 0)
-        self.factory.add_mesh(position_object='@fem.visual.OGL',
-                              at=self.instance_id,
-                              c='green')
+        self.factory.add_mesh_callback(position_object='@fem.visual.OGL',
+                                       at=self.instance_id,
+                                       c='green')
 
     def onSimulationInitDoneEvent(self, event):
         """

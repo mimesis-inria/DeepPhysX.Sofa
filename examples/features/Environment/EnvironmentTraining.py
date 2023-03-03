@@ -43,24 +43,23 @@ class EnvironmentTraining(EnvironmentDataset):
     """
 
     def init_visualization(self):
-
         # Point cloud (object will have id = 0)
-        self.factory.add_points(position_object='@input.MO',
-                                at=self.instance_id,
-                                c='blue',
-                                point_size=5)
+        self.factory.add_points_callback(position_object='@input.MO',
+                                         at=self.instance_id,
+                                         c='blue',
+                                         point_size=5)
 
         # Ground truth value (object will have id = 1)
-        self.factory.add_points(position_object='@output.MO',
-                                at=self.instance_id,
-                                c='green',
-                                point_size=10)
+        self.factory.add_points_callback(position_object='@output.MO',
+                                         at=self.instance_id,
+                                         c='green',
+                                         point_size=10)
 
         # Prediction value (object will have id = 2)
-        self.factory.add_points(position_object='@predict.MO',
-                                at=self.instance_id,
-                                c='pink',
-                                point_size=10)
+        self.factory.add_points_callback(position_object='@predict.MO',
+                                         at=self.instance_id,
+                                         c='pink',
+                                         point_size=10)
 
     """
     ENVIRONMENT BEHAVIOR
@@ -73,12 +72,10 @@ class EnvironmentTraining(EnvironmentDataset):
     """
 
     def onAnimateEndEvent(self, _):
-
         # Request and apply a prediction in the Environment
         self.apply_prediction(self.get_prediction(input=self.MO['input'].position.value))
 
     def apply_prediction(self, prediction):
-
         # Update MechanicalObject
         center = prediction['prediction']
         self.MO['prediction'].position.value = center

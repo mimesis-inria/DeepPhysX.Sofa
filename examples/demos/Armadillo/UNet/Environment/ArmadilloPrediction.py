@@ -50,23 +50,22 @@ class ArmadilloPrediction(ArmadilloTraining):
         # Nothing to visualize if the predictions are run in SOFA GUI
         if self.visualizer:
             # Add the mesh model (object will have id = 0)
-            self.factory.add_mesh(position_object='@nn.visual.OGL',
-                                  at=self.instance_id,
-                                  c='orange')
+            self.factory.add_mesh_callback(position_object='@nn.visual.OGL',
+                                           at=self.instance_id,
+                                           c='orange')
             # Point cloud for sparse grid (object will have id = 1)
-            self.factory.add_points(position_object='@nn.SparseGridMO',
-                                    point_size=2,
-                                    c='grey',
-                                    at=self.instance_id)
+            self.factory.add_points_callback(position_object='@nn.SparseGridMO',
+                                             point_size=2,
+                                             c='grey',
+                                             at=self.instance_id)
             # Arrows representing the force fields (object will have id >= 1)
             for i in range(len(self.cff)):
-                self.factory.add_arrows(position_object='@nn.surface.SurfaceMO',
-                                        start_indices=self.cff[i].indices.value,
-                                        vector_object=f'@nn.surface.cff_{p_forces.zones[i]}',
-                                        scale=0.25 / p_model.scale,
-                                        c='green',
-                                        at=self.instance_id)
-
+                self.factory.add_arrows_callback(position_object='@nn.surface.SurfaceMO',
+                                                 start_indices=self.cff[i].indices.value,
+                                                 vector_object=f'@nn.surface.cff_{p_forces.zones[i]}',
+                                                 scale=0.25 / p_model.scale,
+                                                 c='green',
+                                                 at=self.instance_id)
 
     def onAnimateBeginEvent(self, event):
         """

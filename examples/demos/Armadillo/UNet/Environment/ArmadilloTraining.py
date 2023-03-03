@@ -48,9 +48,9 @@ class ArmadilloTraining(ArmadilloSofa):
         """
 
         # Add the mesh model (object will have id = 0)
-        self.factory.add_mesh(position_object='@fem.visual.OGL',
-                              at=self.instance_id,
-                              c='green')
+        self.factory.add_mesh_callback(position_object='@fem.visual.OGL',
+                                       at=self.instance_id,
+                                       c='green')
 
     def onAnimateEndEvent(self, event):
         """

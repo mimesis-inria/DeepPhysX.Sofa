@@ -25,7 +25,6 @@ class BeamTraining(BeamSofa):
                  as_tcp_ip_client=True,
                  instance_id=1,
                  instance_nb=1):
-
         BeamSofa.__init__(self,
                           as_tcp_ip_client=as_tcp_ip_client,
                           instance_id=instance_id,
@@ -48,9 +47,9 @@ class BeamTraining(BeamSofa):
         """
 
         # Add the mesh model (object will have id = 0)
-        self.factory.add_mesh(position_object='@fem.visual.OGL',
-                              at=self.instance_id,
-                              c='green')
+        self.factory.add_mesh_callback(position_object='@fem.visual.OGL',
+                                       at=self.instance_id,
+                                       c='green')
 
     def onAnimateEndEvent(self, event):
         """

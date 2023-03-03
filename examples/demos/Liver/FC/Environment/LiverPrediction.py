@@ -52,9 +52,9 @@ class LiverPrediction(LiverTraining):
         # Nothing to visualize if the predictions are run in SOFA GUI.
         if self.visualizer:
             # Add the mesh model (object will have id = 0)
-            self.factory.add_mesh(position_object='@nn.visual.OGL',
-                                  at=self.instance_id,
-                                  c='orange')
+            self.factory.add_mesh_callback(position_object='@nn.visual.OGL',
+                                           at=self.instance_id,
+                                           c='orange')
 
     def onAnimateBeginEvent(self, event):
         """
@@ -74,7 +74,8 @@ class LiverPrediction(LiverTraining):
             for i in range(self.nb_forces):
 
                 # Pick up a random visible surface point, select the points in a centered sphere
-                current_point = self.n_surface_mo.position.value[np.random.randint(len(self.n_surface_mo.position.value))]
+                current_point = self.n_surface_mo.position.value[
+                    np.random.randint(len(self.n_surface_mo.position.value))]
                 # Check distance to other points
                 distance_check = True
                 for p in selected_centers:

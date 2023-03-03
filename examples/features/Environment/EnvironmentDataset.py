@@ -26,7 +26,6 @@ class EnvironmentDataset(EnvironmentSofa):
                  constant=False,
                  data_size=(30, 3),
                  delay=False):
-
         EnvironmentSofa.__init__(self,
                                  as_tcp_ip_client=as_tcp_ip_client,
                                  instance_id=instance_id,
@@ -44,23 +43,21 @@ class EnvironmentDataset(EnvironmentSofa):
     """
 
     def init_database(self):
-
         # Define the fields of the Training database
         self.define_training_fields(fields=[('input', ndarray), ('ground_truth', ndarray)])
 
     def init_visualization(self):
-
         # Point cloud (object will have id = 0)
-        self.factory.add_points(position_object='@input.MO',
-                                at=self.instance_id,
-                                c='blue',
-                                point_size=5)
+        self.factory.add_points_callback(position_object='@input.MO',
+                                         at=self.instance_id,
+                                         c='blue',
+                                         point_size=5)
 
         # Ground truth value (object will have id = 1)
-        self.factory.add_points(position_object='@output.MO',
-                                at=self.instance_id,
-                                c='green',
-                                point_size=10)
+        self.factory.add_points_callback(position_object='@output.MO',
+                                         at=self.instance_id,
+                                         c='green',
+                                         point_size=10)
 
     """
     ENVIRONMENT BEHAVIOR
@@ -72,7 +69,6 @@ class EnvironmentDataset(EnvironmentSofa):
     """
 
     def onAnimateBeginEvent(self, _):
-
         EnvironmentSofa.onAnimateBeginEvent(self, _)
         self.set_training_data(input=self.MO['input'].position.value,
                                ground_truth=self.MO['ground_truth'].position.value)
