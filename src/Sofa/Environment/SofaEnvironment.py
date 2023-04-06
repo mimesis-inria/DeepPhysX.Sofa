@@ -11,28 +11,17 @@ import Sofa.Simulation
 
 class SofaEnvironment(Sofa.Core.Controller, BaseEnvironment):
 
-    def __init__(self,
-                 as_tcp_ip_client: bool = True,
-                 instance_id: int = 1,
-                 instance_nb: int = 1,
-                 *args, **kwargs):
+    def __init__(self, instance_id: Tuple[int, int] = (1, 1), *args, **kwargs):
         """
         SofaEnvironment computes simulated data with SOFA for the Network and its training process.
 
-        :param as_tcp_ip_client: Environment is a TcpIpObject if True, is owned by an EnvironmentManager if False.
-        :param instance_id: ID of the instance.
-        :param instance_nb: Number of simultaneously launched instances.
-        :param visualization_db: The path to the visualization Database or the visualization Database object to connect.
+        :param instance_id: Tuple containing the ID of the instance & the number of simultaneously launched instances.
         """
 
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
         # Warning: Define root node before init Environment
         self.root = Sofa.Core.Node('root')
-        BaseEnvironment.__init__(self,
-                                 as_tcp_ip_client=as_tcp_ip_client,
-                                 instance_id=instance_id,
-                                 instance_nb=instance_nb,
-                                 **kwargs)
+        BaseEnvironment.__init__(self, instance_id=instance_id, **kwargs)
         self.root.addObject(self)
 
     ##########################################################################################
