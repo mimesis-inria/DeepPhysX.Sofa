@@ -42,12 +42,17 @@ class SofaPrediction(Sofa.Core.Controller, BasePrediction):
                                 record=record)
 
         self.prediction_begin()
-        self.root = self.data_manager.environment_manager.environment.root
+
+        # Add the Pipeline before the Environment in the root node (Events are executed sequentially)
+        env = self.data_manager.environment_manager.environment
+        self.root = env.root
+        self.root.removeObject(env)
         self.root.addObject(self)
+        self.root.addObject(env)
+
         self.load_samples = environment_config.load_samples
 
     def onAnimateBeginEvent(self, _):
-
         if self.load_samples:
             sample_id = self.data_manager.load_sample()
             self.data_manager.environment_manager.environment._get_training_data(sample_id)
