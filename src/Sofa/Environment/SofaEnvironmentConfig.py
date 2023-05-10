@@ -4,7 +4,7 @@ from sys import modules, executable
 from subprocess import run
 
 from DeepPhysX.Core.Environment.BaseEnvironmentConfig import BaseEnvironmentConfig
-from DeepPhysX.Sofa.Environment.SofaEnvironment import SofaEnvironment
+from DeepPhysX.Sofa.Environment.SofaEnvironmentController import SofaEnvironment, SofaEnvironmentController
 
 
 class SofaEnvironmentConfig(BaseEnvironmentConfig):
@@ -72,16 +72,12 @@ class SofaEnvironmentConfig(BaseEnvironmentConfig):
         run([executable, script, self.environment_file, self.environment_class.__name__,
              self.ip_address, str(self.port), str(idx), str(self.number_of_thread)])
 
-    def create_environment(self) -> SofaEnvironment:
+    def create_environment(self) -> SofaEnvironmentController:
         """
         Create an Environment that will not be a TcpIpObject.
 
         :return: Environment object.
         """
 
-        # Create instance
-        environment = self.environment_class(**self.env_kwargs)
-        if not isinstance(environment, SofaEnvironment):
-            raise TypeError(f"[{self.name}] The given 'environment_class'={self.environment_class} must be a "
-                            f"SofaEnvironment.")
-        return environment
+        return SofaEnvironmentController(environment_class=self.environment_class,
+                                         environment_kwargs=self.environment_kwargs)
